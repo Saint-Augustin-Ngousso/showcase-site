@@ -1,5 +1,9 @@
-// Client de l'API du backend (Django). L'adresse se règle avec VITE_API_URL.
-export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/$/, '')
+// Client de l'API du backend (Django).
+// En production, l'API est servie sur le même domaine (/api). En local : http://localhost:8000/api.
+// VITE_API_URL permet de forcer une autre adresse (adresse complète en https://…).
+export const API_URL = (
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api')
+).replace(/\/$/, '')
 
 const AUTH_KEY = 'paroisse.auth'
 
