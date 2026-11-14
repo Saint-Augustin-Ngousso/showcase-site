@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom'
-import { parish, quickActions } from '../data/content.js'
+import { quickActions } from '../data/content.js'
+import { useSite } from '../data/SiteContext.jsx'
 
 export default function ActionBar() {
+  const { parish } = useSite()
   return (
     <nav
       aria-label="Actions rapides"
@@ -17,11 +19,7 @@ export default function ActionBar() {
             )
           }
           return (
-            <NavLink
-              key={item.label}
-              to="/contact"
-              className="py-3 text-center text-[11px] tracking-wide text-wine uppercase"
-            >
+            <NavLink key={item.label} to="/contact" className="py-3 text-center text-[11px] tracking-wide text-wine uppercase">
               {item.label}
             </NavLink>
           )

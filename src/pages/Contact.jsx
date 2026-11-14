@@ -1,9 +1,38 @@
-import { parish, projects } from '../data/content.js'
+import { useSite } from '../data/SiteContext.jsx'
 import PastoralForm from '../components/PastoralForm.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
 
+function DonationCard({ account }) {
+  const lines = [
+    ['Titulaire', account.accountName],
+    [account.kind === 'bank' ? 'Numéro de compte' : 'Numéro', account.number],
+    ['Banque', account.bankName],
+    ['RIB / IBAN', account.rib],
+    ['SWIFT / BIC', account.swift],
+  ].filter(([, value]) => value)
+  return (
+    <Card>
+      <p className="text-xs tracking-[0.2em] text-wine uppercase">{account.kindLabel}</p>
+      <h3 className="font-serif mt-2 text-xl">{account.label}</h3>
+      <dl className="mt-3 space-y-1 text-sm">
+        {lines.map(([label, value]) => (
+          <div key={label} className="flex flex-wrap gap-x-2">
+            <dt className="text-muted">{label} :</dt>
+            <dd className="font-medium break-all select-all">{value}</dd>
+          </div>
+        ))}
+      </dl>
+      {account.details ? <p className="mt-3 whitespace-pre-line text-sm text-muted">{account.details}</p> : null}
+    </Card>
+  )
+}
+
 export default function Contact() {
-  const mapsSrc = `https://maps.google.com/maps?q=${encodeURIComponent(parish.mapsQuery)}&z=15&output=embed`
+  const { parish, projects, donationAccounts } = useSite()
+  const mapsTarget =
+    parish.latitude && parish.longitude ? `${parish.latitude},${parish.longitude}` : parish.mapsQuery || parish.address
+  const mapsSrc = `https://maps.google.com/maps?q=${encodeURIComponent(mapsTarget)}&z=15&output=embed`
+  const preciseLocation = Boolean(parish.latitude && parish.longitude)
 
   return (
     <>
@@ -16,24 +45,35 @@ export default function Contact() {
           <Card>
             <h2 className="font-serif text-2xl text-wine">Informations pratiques</h2>
             <p className="mt-3">{parish.address}</p>
-            <p className="mt-2 text-muted">{parish.diocese} · {parish.zone}</p>
-            <p className="mt-2 text-sm text-muted">{parish.transport}</p>
+            {parish.landmark ? <p className="mt-1 text-sm text-muted">Repère : {parish.landmark}</p> : null}
+            <p className="mt-2 text-muted">
+              {parish.diocese} · {parish.zone}
+            </p>
+            {parish.transport ? <p className="mt-2 text-sm text-muted">{parish.transport}</p> : null}
             <dl className="mt-6 space-y-3 text-sm">
               <div>
                 <dt className="font-medium">Téléphone</dt>
-                <dd className="text-muted">{parish.phone || 'À préciser'}</dd>
+                <dd className="text-muted">
+                  {parish.phone ? <a href={`tel:${parish.phone.replace(/\s/g, '')}`}>{parish.phone}</a> : 'À préciser'}
+                </dd>
               </div>
               <div>
                 <dt className="font-medium">Courriel</dt>
-                <dd className="text-muted">{parish.email || 'À préciser'}</dd>
+                <dd className="text-muted">{parish.email ? <a href={`mailto:${parish.email}`}>{parish.email}</a> : 'À préciser'}</dd>
               </div>
               <div>
                 <dt className="font-medium">Secrétariat</dt>
                 <dd className="text-muted">{parish.officeHours || 'Horaires à préciser'}</dd>
               </div>
+              {parish.churchOpen ? (
+                <div>
+                  <dt className="font-medium">Ouverture de l’église</dt>
+                  <dd className="text-muted">{parish.churchOpen}</dd>
+                </div>
+              ) : null}
               <div>
                 <dt className="font-medium">WhatsApp paroissial</dt>
-                <dd className="text-muted">Compte à publier dès confirmation.</dd>
+                <dd className="text-muted">{parish.whatsappNumber ? `+${parish.whatsappNumber}` : 'Compte à publier dès confirmation.'}</dd>
               </div>
             </dl>
             {parish.whatsapp ? (
@@ -43,9 +83,10 @@ export default function Contact() {
             ) : null}
           </Card>
           <PastoralForm
-            storageKey="messages-secretariat"
+            endpoint="/requests/"
             submitLabel="Écrire au secrétariat"
-            successTitle="Message préparé"
+            successTitle="Message envoyé"
+            toPayload={(f) => ({ kind: 'secretariat', name: f.prenom, contact: f.contact, message: f.message })}
             fields={[
               { name: 'prenom', label: 'Prénom', required: true },
               { name: 'contact', label: 'Téléphone, WhatsApp ou courriel', required: true },
@@ -57,44 +98,61 @@ export default function Contact() {
 
       <Section tone="stone" title="Plan d’accès">
         <iframe
-          title="Carte de Ngousso, Yaoundé"
+          title="Carte de la paroisse"
           src={mapsSrc}
           className="h-80 w-full border border-gold/30"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         />
-        <ComingSoon className="mt-4">
-          L’adresse précise, le repère d’accès et le point GPS officiel remplaceront cette carte de quartier.
-        </ComingSoon>
+        {preciseLocation ? (
+          <div className="mt-4">
+            <CtaLink href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapsTarget)}`}>
+              Itinéraire
+            </CtaLink>
+          </div>
+        ) : (
+          <ComingSoon className="mt-4">
+            L’adresse précise, le repère d’accès et le point GPS officiel remplaceront cette carte de quartier.
+          </ComingSoon>
+        )}
       </Section>
 
       <Section id="soutien" title="Dons, offrandes et quêtes">
-        <p className="mb-6 max-w-2xl text-muted">
-          Offrandes de messe, dons et soutien aux travaux du presbytère. Les coordonnées de paiement ne seront publiées
-          qu’après validation du conseil pour les affaires économiques.
-        </p>
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <p className="text-xs tracking-[0.2em] text-wine uppercase">Mobile Money</p>
-            <p className="mt-3 text-muted">Numéro à confirmer</p>
-          </Card>
-          <Card>
-            <p className="text-xs tracking-[0.2em] text-wine uppercase">Orange Money</p>
-            <p className="mt-3 text-muted">Numéro à confirmer</p>
-          </Card>
-          <Card>
-            <p className="text-xs tracking-[0.2em] text-wine uppercase">Virement / diaspora</p>
-            <p className="mt-3 text-muted">RIB à confirmer</p>
-          </Card>
-        </div>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {projects.map((item) => (
-            <Card key={item.title}>
-              <h3 className="font-serif text-2xl text-wine">{item.title}</h3>
-              <p className="mt-3 text-muted">{item.text}</p>
-            </Card>
-          ))}
-        </div>
+        {parish.donationsIntro ? <p className="mb-6 max-w-2xl whitespace-pre-line text-muted">{parish.donationsIntro}</p> : null}
+        {donationAccounts.length ? (
+          <div className="grid gap-4 md:grid-cols-3">
+            {donationAccounts.map((account) => (
+              <DonationCard key={account.id} account={account} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-3">
+            {['Mobile Money', 'Orange Money', 'Virement / diaspora'].map((label) => (
+              <Card key={label}>
+                <p className="text-xs tracking-[0.2em] text-wine uppercase">{label}</p>
+                <p className="mt-3 text-muted">Coordonnées à confirmer</p>
+              </Card>
+            ))}
+          </div>
+        )}
+        {projects.length ? (
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            {projects.map((item) => (
+              <Card key={item.title}>
+                <h3 className="font-serif text-2xl text-wine">{item.title}</h3>
+                {item.progress ? (
+                  <div className="mt-3">
+                    <div className="h-2 w-full bg-stone">
+                      <div className="h-2 bg-gold" style={{ width: `${Math.min(100, item.progress)}%` }} />
+                    </div>
+                    <p className="mt-1 text-xs text-muted">{item.progress} % réalisé</p>
+                  </div>
+                ) : null}
+                <p className="mt-3 text-muted">{item.text}</p>
+              </Card>
+            ))}
+          </div>
+        ) : null}
       </Section>
     </>
   )

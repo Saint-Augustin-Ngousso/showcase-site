@@ -1,13 +1,16 @@
 import { NavLink } from 'react-router-dom'
-import { nav, parish } from '../data/content.js'
-
-const socials = [
-  { href: parish.facebook, label: 'Facebook' },
-  { href: parish.youtube, label: 'YouTube' },
-  { href: parish.instagram, label: 'Instagram' },
-].filter((item) => item.href)
+import { nav } from '../data/content.js'
+import { useSite } from '../data/SiteContext.jsx'
 
 export default function Footer() {
+  const { parish } = useSite()
+  const socials = [
+    { href: parish.facebook, label: 'Facebook' },
+    { href: parish.youtube, label: 'YouTube' },
+    { href: parish.instagram, label: 'Instagram' },
+    { href: parish.tiktok, label: 'TikTok' },
+  ].filter((item) => item.href)
+
   return (
     <footer className="bg-wine-dark text-cream">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4">
@@ -73,9 +76,12 @@ export default function Footer() {
             <li>
               <NavLink to="/mediatheque" className="hover:text-gold-light">Galerie photos</NavLink>
             </li>
+            <li>
+              <NavLink to="/connexion" className="hover:text-gold-light">Espace connecté</NavLink>
+            </li>
             {socials.map((item) => (
               <li key={item.label}>
-                <a href={item.href}>{item.label}</a>
+                <a href={item.href} target="_blank" rel="noreferrer" className="hover:text-gold-light">{item.label}</a>
               </li>
             ))}
           </ul>

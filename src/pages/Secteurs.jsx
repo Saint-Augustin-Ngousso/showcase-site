@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
-import { cevSectors } from '../data/content.js'
+import { useSite } from '../data/SiteContext.jsx'
 import { Card, CtaLink, PageHero, Section } from '../components/Layout.jsx'
 
 export default function Secteurs() {
+  const { cevSectors } = useSite()
   return (
     <>
       <PageHero kicker="Territoire" title="Secteurs et CEV">
@@ -17,11 +18,7 @@ export default function Secteurs() {
               <p className="text-xs tracking-[0.2em] text-wine uppercase">Secteur</p>
               <h2 className="font-serif mt-2 text-3xl">{sector.saint}</h2>
               <p className="mt-3 text-sm">{sector.chaplain}</p>
-              {sector.layLeaders ? (
-                <p className="mt-1 text-sm text-muted">Responsables laïcs : {sector.layLeaders}</p>
-              ) : (
-                <p className="mt-1 text-sm text-muted">Responsables laïcs : à compléter</p>
-              )}
+              <p className="mt-1 text-sm text-muted">Responsables laïcs : {sector.layLeaders || 'à compléter'}</p>
               <p className="mt-3 flex-1 text-muted">{sector.blurb}</p>
               <p className="mt-3 text-sm text-wine">
                 {sector.cevs.length ? `${sector.cevs.length} CEV` : 'Liste des CEV à fournir'}
@@ -38,6 +35,7 @@ export default function Secteurs() {
 }
 
 export function SectorNav() {
+  const { cevSectors } = useSite()
   return (
     <p className="mb-8 flex flex-wrap gap-3 text-sm">
       <Link to="/secteurs" className="text-wine underline">

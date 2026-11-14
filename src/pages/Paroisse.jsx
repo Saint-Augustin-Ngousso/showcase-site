@@ -1,8 +1,9 @@
-import { parish, pastoralProgram, priests } from '../data/content.js'
+import { useSite } from '../data/SiteContext.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
 
 export default function Paroisse() {
-  const cure = priests.find((person) => person.id === 'cure')
+  const { parish, pastoralProgram, priests } = useSite()
+  const cure = priests.find((person) => person.id === 'cure') || priests[0]
 
   return (
     <>
@@ -32,13 +33,17 @@ export default function Paroisse() {
       </Section>
 
       <Section tone="stone" eyebrow="Mémoire" title="Histoire">
-        <ComingSoon>
-          L’historique officiel — date de création, premiers curés, construction de la chapelle et de la petite église —
-          sera publié après validation de l’équipe pastorale.
-        </ComingSoon>
+        {parish.history ? (
+          <div className="max-w-3xl space-y-4 whitespace-pre-line text-muted">{parish.history}</div>
+        ) : (
+          <ComingSoon>
+            L’historique officiel — date de création, premiers curés, construction de la chapelle et de la petite église —
+            sera publié après validation de l’équipe pastorale.
+          </ComingSoon>
+        )}
       </Section>
 
-      <Section id="programme" title={`Programme pastoral ${parish.yearLabel.replace('Année pastorale ', '')}`}>
+      <Section id="programme" title={`Programme pastoral ${(parish.yearLabel || '').replace('Année pastorale ', '')}`}>
         <p className="mb-8 max-w-3xl text-muted">{pastoralProgram.objective}</p>
         <div className="grid gap-4 md:grid-cols-3">
           {pastoralProgram.munera.map((block) => (
@@ -58,16 +63,19 @@ export default function Paroisse() {
         </div>
       </Section>
 
-      <Section tone="wine" title="Le curé">
-        <p className="max-w-3xl text-cream/85">
-          {cure.title} {cure.name}, curé de la paroisse, aumônier du secteur {cure.sector}. {cure.chaplaincy}
-        </p>
-        <div className="mt-6">
-          <CtaLink to="/pretres" invert>
-            Toute l’équipe sacerdotale
-          </CtaLink>
-        </div>
-      </Section>
+      {cure ? (
+        <Section tone="wine" title="Le curé">
+          <p className="max-w-3xl text-cream/85">
+            {cure.title} {cure.name}, curé de la paroisse{cure.sector ? `, aumônier du secteur ${cure.sector}` : ''}.{' '}
+            {cure.chaplaincy}
+          </p>
+          <div className="mt-6">
+            <CtaLink to="/pretres" invert>
+              Toute l’équipe sacerdotale
+            </CtaLink>
+          </div>
+        </Section>
+      ) : null}
     </>
   )
 }

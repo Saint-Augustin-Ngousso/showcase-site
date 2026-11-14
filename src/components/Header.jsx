@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { nav, parish } from '../data/content.js'
+import { useAuth } from '../auth/AuthContext.jsx'
+import { nav } from '../data/content.js'
+import { useSite } from '../data/SiteContext.jsx'
 import SearchBox from './SearchBox.jsx'
 
 function Cross({ className = 'h-9 w-9' }) {
@@ -15,6 +17,8 @@ function Cross({ className = 'h-9 w-9' }) {
 export default function Header() {
   const [open, setOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const { parish } = useSite()
+  const { user, hasRole } = useAuth()
 
   return (
     <header className="sticky top-0 z-40">
@@ -28,6 +32,13 @@ export default function Header() {
             <NavLink to="/contact" className="hidden sm:inline">
               Contact
             </NavLink>
+            {user ? (
+              <NavLink to={hasRole('secretariat') ? '/espace' : '/connexion'} className="text-gold-light">
+                {hasRole('secretariat') ? 'Administration' : user.name}
+              </NavLink>
+            ) : (
+              <NavLink to="/connexion">Se connecter</NavLink>
+            )}
           </div>
         </div>
       </div>
@@ -35,7 +46,11 @@ export default function Header() {
       <div className="border-b border-gold/30 bg-cream/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <NavLink to="/" end className="flex shrink-0 items-center gap-2 sm:gap-3" onClick={() => setOpen(false)}>
-            <Cross className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
+            {parish.logo ? (
+              <img src={parish.logo} alt="" className="h-8 w-8 shrink-0 object-contain sm:h-9 sm:w-9" />
+            ) : (
+              <Cross className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
+            )}
             <span>
               <span className="font-serif block text-base leading-none text-wine sm:text-xl">{parish.name}</span>
               <span className="text-[10px] tracking-[0.14em] text-muted uppercase sm:text-xs">{parish.place}</span>
@@ -108,6 +123,13 @@ export default function Header() {
                   WhatsApp
                 </a>
               ) : null}
+              <NavLink
+                to={user && hasRole('secretariat') ? '/espace' : '/connexion'}
+                className="px-4 py-3 text-center text-sm text-wine underline"
+                onClick={() => setOpen(false)}
+              >
+                {user ? (hasRole('secretariat') ? 'Administration du site' : 'Mon compte') : 'Se connecter avec Google'}
+              </NavLink>
             </div>
           </nav>
         ) : null}
