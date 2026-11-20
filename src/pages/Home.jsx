@@ -1,12 +1,27 @@
 import { Link } from 'react-router-dom'
 import { massPlaces, useSite } from '../data/SiteContext.jsx'
-import { formatDateShort } from '../data/content.js'
+import { groupUpcoming, isoDay, relativeDay } from '../data/dates.js'
+import EventList from '../components/EventList.jsx'
 import { Card, CtaLink, PhotoGrid, Section } from '../components/Layout.jsx'
+
+/** Garde les premiers événements de chaque groupe, `max` au total. */
+function firstEvents(groups, max) {
+  let left = max
+  return groups
+    .map((group) => {
+      const items = group.items.slice(0, left)
+      left -= items.length
+      return { ...group, items }
+    })
+    .filter((group) => group.items.length)
+}
 
 export default function Home() {
   const { parish, schedules, gallery, heroPhoto, priests, news, nextSundayMass, upcomingEvents } = useSite()
   const nextMass = nextSundayMass()
-  const nextEvent = upcomingEvents()[0]
+  const today = isoDay()
+  const nextEvent = upcomingEvents(today)[0]
+  const soon = firstEvents(groupUpcoming(upcomingEvents(today), today), 6)
   const cure = priests.find((person) => person.id === 'cure') || priests[0]
   const pinned = news.filter((item) => item.pinned).slice(0, 2)
 
@@ -17,7 +32,7 @@ export default function Home() {
           <img
             src={heroPhoto.src}
             alt={heroPhoto.alt}
-            className="absolute inset-0 h-full w-full object-cover opacity-45"
+            className="absolute inset-0 h-full w-full object-cover object-[center_80%] opacity-50"
             fetchPriority="high"
           />
         ) : null}
@@ -72,8 +87,8 @@ export default function Home() {
             {nextEvent ? (
               <>
                 <p className="font-serif mt-2 text-2xl leading-tight">{nextEvent.title}</p>
-                <p className="mt-1 text-sm text-muted">
-                  {formatDateShort(nextEvent.date)}
+                <p className="mt-1 text-sm text-muted first-letter:uppercase">
+                  {nextEvent.date <= today ? 'En cours' : relativeDay(nextEvent.date, today)}
                   {nextEvent.audience ? ` · ${nextEvent.audience}` : ''}
                 </p>
               </>
@@ -106,7 +121,16 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section tone="stone" eyebrow="Dimanche" title="Horaires des messes">
+      {soon.length ? (
+        <Section tone="stone" eyebrow="Agenda" title="Les prochains jours">
+          <EventList groups={soon} />
+          <div className="mt-6">
+            <CtaLink to="/agenda">Tout l’agenda</CtaLink>
+          </div>
+        </Section>
+      ) : null}
+
+      <Section eyebrow="Dimanche" title="Horaires des messes">
         <p className="mb-6 max-w-2xl text-muted">
           Deux lieux de culte : la chapelle et la petite église. Sur le site public, les heures et les lieux suffisent.
         </p>
@@ -121,7 +145,7 @@ export default function Home() {
       </Section>
 
       {gallery.length ? (
-        <Section eyebrow="En images" title="La vie de la communauté">
+        <Section tone="stone" eyebrow="En images" title="La vie de la communauté">
           <PhotoGrid photos={gallery.slice(0, 3)} />
           <div className="mt-6">
             <CtaLink to="/mediatheque">Voir la galerie</CtaLink>

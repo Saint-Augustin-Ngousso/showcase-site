@@ -56,7 +56,7 @@ export default function Dashboard() {
               highlight={hasRole('pretre') && totalPending > 0}
             />
             {hasRole('pretre') ? <Tile to="/espace/intentions" label="Intentions de prière (total)" value={data.intentions_today} /> : null}
-            {hasRole('cure') ? <Tile to="/espace/utilisateurs" label="Comptes inscrits" value={data.users} /> : null}
+            {hasRole('admin') ? <Tile to="/espace/utilisateurs" label="Comptes inscrits" value={data.users} /> : null}
           </div>
           {totalPending ? (
             <ul className="mt-4 divide-y divide-stone border border-gold/30 bg-white text-sm">
@@ -80,7 +80,7 @@ export default function Dashboard() {
         <Link to="/espace/import-agenda" className="border border-wine px-3 py-2 text-wine">Importer le programme PDF</Link>
         <Link to="/espace/r/mass-times" className="border border-wine px-3 py-2 text-wine">Horaires des messes</Link>
         <Link to="/espace/parametres" className="border border-wine px-3 py-2 text-wine">Téléphone, adresse, WhatsApp</Link>
-        {hasRole('cure') ? (
+        {hasRole('admin') ? (
           <Link to="/espace/r/donation-accounts" className="border border-wine px-3 py-2 text-wine">Comptes pour les dons</Link>
         ) : null}
       </div>

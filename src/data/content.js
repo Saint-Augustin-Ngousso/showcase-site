@@ -286,8 +286,17 @@ export const cevSectors = [
     saint: 'Saint Jean',
     chaplain: 'Abbé Landry Tsigo',
     layLeaders: '',
-    blurb: 'Secteur confié à l’abbé Landry Tsigo. La liste des CEV, les responsables laïcs et le programme des descentes seront publiés ici.',
-    cevs: [],
+    blurb: 'Secteur confié à l’abbé Landry Tsigo. Huit CEV ; le programme des descentes sera publié ici.',
+    cevs: [
+      { name: 'Saint Jean Marie Vianney', lead: 'Mama Crescence' },
+      { name: 'Sainte Marie Madeleine', lead: 'Irène Kontchou' },
+      { name: 'Sainte Bernadette', lead: 'Mme Ngaline Bernadette' },
+      { name: 'Saint Julien', lead: 'Mme Tengo Pauline' },
+      { name: 'Saint Michel Archange', lead: 'Papa Abona' },
+      { name: 'Saint Vincent de Paul', lead: 'Papa Barnabé' },
+      { name: 'Saint Jean Chrysostome', lead: 'Papa Tsoungui' },
+      { name: 'Saint Paul', lead: 'Papa Timothée' },
+    ],
     descents: [],
   },
 ]
@@ -441,7 +450,12 @@ export const gallery = [
   },
 ]
 
-export const heroPhoto = gallery[0]
+export const heroPhoto = {
+  src: '/photos/eglise-saint-augustin.jpg',
+  alt: 'L’église et le clocher de la paroisse Saint Augustin de Ngousso',
+  caption: '',
+  category: '',
+}
 
 export const news = [
   {

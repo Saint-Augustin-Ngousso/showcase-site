@@ -33,9 +33,19 @@ export default function Header() {
               Contact
             </NavLink>
             {user ? (
-              <NavLink to={hasRole('secretariat') ? '/espace' : '/connexion'} className="text-gold-light">
-                {hasRole('secretariat') ? 'Administration' : user.name}
-              </NavLink>
+              <>
+                {hasRole('secretariat') ? (
+                  <NavLink to="/espace" className="text-gold-light">
+                    Administration
+                  </NavLink>
+                ) : null}
+                <NavLink to="/connexion" className="flex items-center gap-1.5" title="Mon compte">
+                  {user.avatar_url ? (
+                    <img src={user.avatar_url} alt="" className="h-5 w-5 rounded-full" referrerPolicy="no-referrer" />
+                  ) : null}
+                  <span className="hidden sm:inline">{user.first_name || user.name}</span>
+                </NavLink>
+              </>
             ) : (
               <NavLink to="/connexion">Se connecter</NavLink>
             )}

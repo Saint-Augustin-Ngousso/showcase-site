@@ -28,6 +28,12 @@ export default function SecteurDetail() {
                   <p className="text-xs tracking-[0.2em] text-wine uppercase">CEV {index + 1}</p>
                   <h2 className="font-serif mt-2 text-2xl text-wine">{cev.name}</h2>
                   <p className="mt-3 text-sm text-muted">{cev.lead}</p>
+                  {cev.zone ? (
+                    <p className="mt-2 whitespace-pre-line text-sm">
+                      <span className="text-xs tracking-[0.15em] text-wine uppercase">Zone · </span>
+                      {cev.zone}
+                    </p>
+                  ) : null}
                   {cev.meeting ? <p className="mt-2 text-sm">Réunion : {cev.meeting}</p> : null}
                   {cev.contact ? <p className="mt-1 text-sm text-muted">Contact : {cev.contact}</p> : null}
                 </Card>

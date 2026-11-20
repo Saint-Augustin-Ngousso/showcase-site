@@ -1,24 +1,28 @@
+import { Link } from 'react-router-dom'
 import { useSite } from '../data/SiteContext.jsx'
 import PastoralForm from '../components/PastoralForm.jsx'
+import { Placeholder } from '../components/Media.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, PhotoGrid, Section } from '../components/Layout.jsx'
 
-function AssociationItem({ item }) {
-  const details = [
-    item.meeting && `Réunion : ${item.meeting}`,
-    item.leader && `Responsable : ${item.leader}`,
-    item.chaplain && `Aumônier : ${item.chaplain}`,
-  ].filter(Boolean)
+export function AssociationCard({ item }) {
+  const line = item.summary || (item.patronSaint ? `Saint patron : ${item.patronSaint}` : item.charism)
   return (
-    <li className="border-t border-gold/20 pt-2 first:border-0 first:pt-0">
-      <span className="flex items-start gap-3">
-        {item.photo ? <img src={item.photo} alt="" className="h-10 w-10 shrink-0 object-cover" loading="lazy" /> : null}
-        <span>
-          {item.name}
-          {item.charism ? <span className="mt-0.5 block text-xs text-muted">{item.charism}</span> : null}
-          {details.length ? <span className="mt-0.5 block text-xs text-muted">{details.join(' · ')}</span> : null}
-        </span>
+    <Link
+      to={`/mouvements/${item.slug}`}
+      className="group flex flex-col overflow-hidden border border-gold/30 bg-white/80 shadow-[0_8px_30px_rgba(26,22,20,0.06)] transition hover:-translate-y-0.5 hover:border-wine"
+    >
+      {item.photo ? (
+        <img src={item.photo} alt="" className="h-36 w-full object-cover" loading="lazy" />
+      ) : (
+        <Placeholder label={item.name} className="h-36 w-full opacity-90 group-hover:opacity-100" />
+      )}
+      <span className="flex flex-1 flex-col p-4">
+        <span className="font-serif text-xl leading-tight text-wine">{item.name}</span>
+        {line ? <span className="mt-1 line-clamp-2 text-sm text-muted">{line}</span> : null}
+        {item.meeting ? <span className="mt-2 text-xs text-muted">Réunion : {item.meeting}</span> : null}
+        <span className="mt-auto pt-3 text-xs tracking-wide text-wine uppercase group-hover:underline">Découvrir le groupe →</span>
       </span>
-    </li>
+    </Link>
   )
 }
 
@@ -34,22 +38,25 @@ export default function Mouvements() {
       </PageHero>
 
       <Section title={`Les associations, en ${associationPlatforms.length} plateformes`}>
-        <p className="mb-8 max-w-2xl text-muted">
-          Pour chaque association : charisme, jour et lieu de réunion, responsable, aumônier, photo — au fur et à mesure
-          que les bureaux transmettent leur fiche.
-        </p>
-        <div className="grid gap-4 md:grid-cols-2">
+        <p className="mb-6 max-w-2xl text-muted">Cliquez sur un groupe pour découvrir sa fiche : histoire, missions, saint patron et photos.</p>
+        <nav className="mb-10 flex flex-wrap gap-2" aria-label="Plateformes">
           {associationPlatforms.map((platform) => (
-            <Card key={platform.id} id={platform.id}>
-              <p className="text-xs tracking-[0.2em] text-wine uppercase">{platform.items.length} associations</p>
-              <h2 className="font-serif mt-2 text-2xl text-wine">{platform.name}</h2>
+            <a key={platform.id} href={`#${platform.id}`} className="border border-wine/30 px-3 py-1.5 text-sm text-wine hover:bg-wine hover:text-cream">
+              {platform.name.replace('Plateforme ', '')} ({platform.items.length})
+            </a>
+          ))}
+        </nav>
+        <div className="grid gap-12">
+          {associationPlatforms.map((platform) => (
+            <div key={platform.id} id={platform.id} className="scroll-mt-28">
+              <h2 className="font-serif text-2xl text-wine sm:text-3xl">{platform.name}</h2>
               {platform.subtitle ? <p className="mt-1 text-sm text-muted">{platform.subtitle}</p> : null}
-              <ul className="mt-4 space-y-2 text-sm">
-                {(platform.associations || platform.items.map((name) => ({ name }))).map((item) => (
-                  <AssociationItem key={item.id || item.name} item={item} />
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {platform.associations.map((item) => (
+                  <AssociationCard key={item.slug} item={item} />
                 ))}
-              </ul>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </Section>
@@ -74,11 +81,9 @@ export default function Mouvements() {
       <Section id="jeunes" title="Groupes de jeunes">
         {youthGroups.chaplain ? <p className="mb-6 text-muted">Suivis par {youthGroups.chaplain}.</p> : null}
         <PhotoGrid photos={gallery.filter((item) => item.category === 'Jeunes').slice(0, 3)} className="mb-8" />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {youthGroups.items.map((item) => (
-            <Card key={item}>
-              <h3 className="font-serif text-xl text-wine">{item}</h3>
-            </Card>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(youthGroups.associations || []).map((item) => (
+            <AssociationCard key={item.slug} item={item} />
           ))}
         </div>
         <div className="mt-6">

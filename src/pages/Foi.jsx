@@ -1,12 +1,11 @@
+import { Link } from 'react-router-dom'
 import { formatDateShort } from '../data/content.js'
 import { useSite } from '../data/SiteContext.jsx'
 import PastoralForm from '../components/PastoralForm.jsx'
+import { Placeholder } from '../components/Media.jsx'
+import { homilyKind } from './EnseignementDetail.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
 
-function youtubeEmbed(url) {
-  const match = (url || '').match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/)
-  return match ? `https://www.youtube-nocookie.com/embed/${match[1]}` : null
-}
 
 export default function Foi() {
   const { faithQuestions, homilies, prayers, testimonials } = useSite()
@@ -41,49 +40,41 @@ export default function Foi() {
         </Card>
       </Section>
 
-      <Section id="homelies" title="Homélies et enseignement du mercredi">
+      <Section id="homelies" title="Homélies et enseignements">
         {published.length ? (
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {published.map((item) => {
-              const video = youtubeEmbed(item.videoUrl)
+              const mediaCount = (item.media || []).length + (item.audio ? 1 : 0) + (item.videoUrl ? 1 : 0)
               return (
-                <Card key={item.id}>
-                  <p className="text-xs tracking-[0.2em] text-wine uppercase">
-                    {item.kind === 'enseignement' ? 'Enseignement · ' : 'Homélie · '}
-                    {item.priest}
-                    {item.date ? ` · ${formatDateShort(item.date)}` : ''}
-                  </p>
-                  <h3 className="font-serif mt-2 text-2xl">{item.title}</h3>
-                  {item.excerpt ? <p className="mt-3 font-medium text-muted">{item.excerpt}</p> : null}
-                  {item.text ? (
-                    <details className="mt-3">
-                      <summary className="cursor-pointer text-sm text-wine">Lire le texte</summary>
-                      <p className="mt-3 whitespace-pre-line text-muted">{item.text}</p>
-                    </details>
-                  ) : null}
-                  {item.audio ? <audio controls preload="none" src={item.audio} className="mt-4 w-full" /> : null}
-                  {video ? (
-                    <iframe
-                      title={item.title}
-                      src={video}
-                      loading="lazy"
-                      className="mt-4 aspect-video w-full"
-                      allow="accelerometer; encrypted-media; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : item.videoUrl ? (
-                    <a href={item.videoUrl} target="_blank" rel="noreferrer" className="mt-4 block text-sm text-wine underline">
-                      Voir la vidéo
-                    </a>
-                  ) : null}
-                </Card>
+                <Link
+                  key={item.id}
+                  to={`/foi/enseignements/${item.id}`}
+                  className="group flex flex-col overflow-hidden border border-gold/30 bg-white/80 shadow-[0_8px_30px_rgba(26,22,20,0.06)] transition hover:-translate-y-0.5 hover:border-wine"
+                >
+                  {item.cover ? (
+                    <img src={item.cover} alt="" className="h-48 w-full object-cover" loading="lazy" />
+                  ) : (
+                    <Placeholder label={item.title} className="h-48 w-full" />
+                  )}
+                  <span className="flex flex-1 flex-col p-5">
+                    <span className="text-xs tracking-[0.2em] text-wine uppercase">
+                      {homilyKind(item)}
+                      {item.priest ? ` · ${item.priest}` : ''}
+                    </span>
+                    <span className="font-serif mt-2 text-2xl leading-tight">{item.title}</span>
+                    {item.date ? <span className="mt-1 text-sm text-muted">{formatDateShort(item.date)}</span> : null}
+                    {item.excerpt ? <span className="mt-3 line-clamp-3 text-sm text-muted">{item.excerpt}</span> : null}
+                    <span className="mt-auto flex items-center justify-between pt-4 text-xs tracking-wide text-wine uppercase">
+                      <span className="group-hover:underline">Lire et écouter →</span>
+                      {mediaCount ? <span className="text-muted normal-case">{mediaCount} média{mediaCount > 1 ? 's' : ''}</span> : null}
+                    </span>
+                  </span>
+                </Link>
               )
             })}
           </div>
         ) : (
-          <ComingSoon>
-            Les textes et, le cas échéant, l’audio seront déposés par les prêtres après relecture.
-          </ComingSoon>
+          <ComingSoon>Les textes et, le cas échéant, l’audio seront déposés par les prêtres après relecture.</ComingSoon>
         )}
       </Section>
 

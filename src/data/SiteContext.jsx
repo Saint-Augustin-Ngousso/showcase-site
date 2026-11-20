@@ -68,6 +68,22 @@ function todayIso() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
+export function slugify(text) {
+  return (text || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function withAssociations(platforms) {
+  // Contenu de secours : les plateformes n'ont que des noms, on fabrique des fiches minimales.
+  return platforms.map((p) =>
+    p.associations ? p : { ...p, associations: p.items.map((name) => ({ name, slug: slugify(name), media: [] })) },
+  )
+}
+
 function enrich(data) {
   const parish = { ...fallback.parish, ...data.parish }
   parish.whatsapp = whatsappLink(parish)
@@ -81,6 +97,13 @@ function enrich(data) {
     parish,
     events,
     schedules,
+    associationPlatforms: withAssociations(data.associationPlatforms || fallbackPayload.associationPlatforms),
+    youthGroups: {
+      ...(data.youthGroups || fallbackPayload.youthGroups),
+      associations:
+        data.youthGroups?.associations ||
+        (data.youthGroups || fallbackPayload.youthGroups).items.map((name) => ({ name, slug: slugify(name), media: [] })),
+    },
     heroPhoto: data.heroPhoto || data.gallery?.[0] || null,
     upcomingEvents(from = todayIso()) {
       return events.filter((item) => (item.dateEnd || item.date) >= from)

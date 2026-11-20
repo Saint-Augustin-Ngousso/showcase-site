@@ -16,6 +16,8 @@ import Mediatheque from './pages/Mediatheque.jsx'
 import Recherche from './pages/Recherche.jsx'
 import Confidentialite from './pages/Confidentialite.jsx'
 import Connexion from './pages/Connexion.jsx'
+import AssociationDetail from './pages/AssociationDetail.jsx'
+import EnseignementDetail from './pages/EnseignementDetail.jsx'
 const AdminLayout = lazy(() => import('./admin/AdminLayout.jsx'))
 const Dashboard = lazy(() => import('./admin/Dashboard.jsx'))
 const SettingsPage = lazy(() => import('./admin/SettingsPage.jsx'))
@@ -58,9 +60,11 @@ export default function App() {
         <Route path="secteurs" element={<Secteurs />} />
         <Route path="secteurs/:secteur" element={<SecteurDetail />} />
         <Route path="mouvements" element={<Mouvements />} />
+        <Route path="mouvements/:slug" element={<AssociationDetail />} />
         <Route path="agenda" element={<Agenda />} />
         <Route path="contact" element={<Contact />} />
         <Route path="foi" element={<Foi />} />
+        <Route path="foi/enseignements/:id" element={<EnseignementDetail />} />
         <Route path="priere" element={<Priere />} />
         <Route path="mediatheque" element={<Mediatheque />} />
         <Route path="recherche" element={<Recherche />} />

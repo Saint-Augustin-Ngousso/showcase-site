@@ -23,7 +23,8 @@ export default function Users() {
     return () => clearTimeout(timer)
   }, [load])
 
-  if (!hasRole('cure')) return <Navigate to="/espace" replace />
+  if (!hasRole('admin')) return <Navigate to="/espace" replace />
+  const currentCure = users.find((u) => u.role === 'cure')
 
   async function patch(user, body, label) {
     setError('')
@@ -45,7 +46,12 @@ export default function Users() {
         <ul className="list-disc pl-5">
           <li><strong>Secrétariat</strong> : informations pratiques, demandes reçues, propose annonces et événements.</li>
           <li><strong>Prêtre</strong> : publie, valide, modifie et supprime tout le contenu ; modère les intentions.</li>
-          <li><strong>Curé</strong> : tout, plus les rôles et les comptes pour les dons.</li>
+          <li><strong>Administrateur</strong> : tout, plus les rôles et les comptes pour les dons.</li>
+          <li>
+            <strong>Curé</strong> : les mêmes droits que l’administrateur. Une seule personne porte ce titre
+            {currentCure ? <> — actuellement <strong>{currentCure.name}</strong></> : ' — personne pour le moment'}.
+            Pour le transmettre, changez d’abord le rôle du curé actuel.
+          </li>
         </ul>
         <p>La personne doit s’être connectée une première fois pour apparaître dans la liste.</p>
       </div>
@@ -92,7 +98,7 @@ export default function Users() {
                       disabled={self || user.is_superuser}
                       onChange={(e) => {
                         const next = e.target.value
-                        if (next === 'cure' && !window.confirm(`Donner le rôle de curé à ${user.name} ? Il pourra gérer les rôles et les comptes de dons.`)) return
+                        if (['cure', 'admin'].includes(next) && !window.confirm(`Donner le rôle « ${ROLE_LABELS[next]} » à ${user.name} ? Cette personne pourra gérer les rôles et les comptes de dons.`)) return
                         patch(user, { role: next }, `rôle « ${ROLE_LABELS[next]} »`)
                       }}
                       className="border border-stone px-2 py-1"

@@ -5,6 +5,7 @@ import { useSite } from '../data/SiteContext.jsx'
 import { api } from '../lib/api.js'
 import { COLUMN_LABELS, RESOURCE_BY_KEY } from './resources.js'
 import { FieldRow, buildBody, emptyForm } from './fields.jsx'
+import Attachments from './Attachments.jsx'
 
 export const STATUS = {
   draft: { label: 'Brouillon', className: 'bg-stone text-muted' },
@@ -142,6 +143,13 @@ export default function ResourceManager() {
         editing === 'new'
           ? await api(resource.endpoint, { method: 'POST', body })
           : await api(`${resource.endpoint}${editing.id}/`, { method: 'PATCH', body })
+      if (editing === 'new' && resource.attachments) {
+        load()
+        reloadSite()
+        startEdit(saved)
+        setNotice('Enregistré. Vous pouvez maintenant ajouter les médias ci-dessous.')
+        return
+      }
       done(
         resource.publishable
           ? saved.status === 'published'
@@ -221,6 +229,9 @@ export default function ResourceManager() {
           {resource.fields.map((fld) => (
             <FieldRow key={fld.name} field={fld} value={form[fld.name]} onChange={(value) => setForm((cur) => ({ ...cur, [fld.name]: value }))} />
           ))}
+          {resource.attachments && editing === 'new' ? (
+            <p className="text-sm text-muted">Enregistrez d’abord : vous pourrez ensuite ajouter {resource.attachments.title.toLowerCase()}.</p>
+          ) : null}
           <div className="flex flex-wrap gap-2 border-t border-stone pt-4">
             {resource.publishable ? (
               <>
@@ -237,10 +248,15 @@ export default function ResourceManager() {
               </button>
             )}
             <button type="button" onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-muted underline">
-              Annuler
+              {editing !== 'new' && resource.attachments ? 'Fermer' : 'Annuler'}
             </button>
           </div>
         </form>
+      ) : null}
+      {editing && editing !== 'new' && resource.attachments ? (
+        <div className="border border-t-0 border-gold/40 bg-white px-5 pb-5">
+          <Attachments config={resource.attachments} parentId={editing.id} />
+        </div>
       ) : null}
 
       <div className="mt-6 flex flex-wrap items-center gap-2">

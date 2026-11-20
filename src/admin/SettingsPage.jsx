@@ -16,6 +16,9 @@ const SECTIONS = [
       f('zone', 'Zone pastorale'),
       f('worship_places', 'Lieux de culte (un par ligne)', 'lines', { rows: 3 }),
       f('logo', 'Logo ou armoiries', 'image'),
+      f('hero_image', 'Image de fond de l’accueil', 'image', {
+        help: 'Photo affichée en grand en haut de la page d’accueil (par défaut : l’église et son clocher).',
+      }),
     ],
   },
   {

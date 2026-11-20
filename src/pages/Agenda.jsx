@@ -1,6 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { formatDateShort } from '../data/content.js'
+import { groupUpcoming, isoDay } from '../data/dates.js'
 import { useSite } from '../data/SiteContext.jsx'
+import EventList from '../components/EventList.jsx'
 import { Card, ComingSoon, PageHero, Section } from '../components/Layout.jsx'
 
 function icsEscape(value) {
@@ -62,7 +64,19 @@ export default function Agenda() {
     return { pad, count: end.getDate(), label: month.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) }
   }, [month])
   const [selected, setSelected] = useState(upcoming[0] || events[0])
-  const listed = (showPast ? events : upcoming).filter((item) => !filter || item.category === filter)
+  const today = isoDay()
+  const detailRef = useRef(null)
+  const filtered = (showPast ? events : upcoming).filter((item) => !filter || item.category === filter)
+  const groups = showPast
+    ? [{ id: 'all', label: 'Toute l’année pastorale', items: filtered }]
+    : groupUpcoming(filtered, today)
+
+  function choose(event) {
+    setSelected(event)
+    const d = new Date(`${event.date}T12:00:00`)
+    setMonth(new Date(d.getFullYear(), d.getMonth(), 1))
+    setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50)
+  }
 
   function shiftMonth(delta) {
     setMonth((current) => new Date(current.getFullYear(), current.getMonth() + delta, 1))
@@ -125,9 +139,15 @@ export default function Agenda() {
                 key={iso}
                 type="button"
                 onClick={() => dayEvents[0] && setSelected(dayEvents[0])}
-                className={`min-h-14 border border-stone p-1 text-left ${dayEvents.length ? 'bg-wine text-cream' : 'bg-white'}`}
+                className={`min-h-14 border p-1 text-left ${dayEvents.length ? 'bg-wine text-cream' : 'bg-white'} ${
+                  iso === today ? 'border-gold ring-2 ring-gold' : 'border-stone'
+                } ${iso < today && !dayEvents.length ? 'text-muted/60' : ''}`}
+                aria-current={iso === today ? 'date' : undefined}
               >
-                <span className="block text-sm">{day}</span>
+                <span className="block text-sm">
+                  {day}
+                  {iso === today ? <span className="ml-1 text-[9px] uppercase">auj.</span> : null}
+                </span>
                 {dayEvents[0] ? <span className="mt-1 block text-[10px] leading-tight normal-case">{dayEvents[0].title}</span> : null}
               </button>
             )
@@ -135,7 +155,9 @@ export default function Agenda() {
         </div>
 
         {selected ? (
+          <div ref={detailRef}>
           <Card className="mt-8">
+            {selected.image ? <img src={selected.image} alt="" className="mb-4 max-h-80 w-full object-cover" loading="lazy" /> : null}
             <p className="text-xs tracking-[0.2em] text-wine uppercase">
               {formatDateShort(selected.date)}
               {selected.dateEnd ? ` — ${formatDateShort(selected.dateEnd)}` : ''}
@@ -149,10 +171,11 @@ export default function Agenda() {
               Ajouter à mon calendrier
             </button>
           </Card>
+          </div>
         ) : null}
       </Section>
 
-      <Section title="Tous les rendez-vous">
+      <Section title="Les rendez-vous">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {FILTERS.map((item) => (
             <button
@@ -169,25 +192,10 @@ export default function Agenda() {
             Afficher les dates passées
           </label>
         </div>
-        {listed.length ? (
-          <ul className="divide-y divide-gold/20 border border-gold/30 bg-white">
-            {listed.map((item) => (
-              <li key={item.id || `${item.date}-${item.title}`} className="grid gap-1 px-4 py-3 sm:grid-cols-3">
-                <span className="text-sm text-muted">
-                  {formatDateShort(item.date)}
-                  {item.dateEnd ? ` — ${formatDateShort(item.dateEnd)}` : ''}
-                </span>
-                <button type="button" className="text-left font-medium sm:col-span-2" onClick={() => setSelected(item)}>
-                  {item.title}
-                  <span className="mt-1 block text-sm font-normal text-muted">
-                    {[item.audience, item.place, item.time].filter(Boolean).join(' · ')}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+        {groups.length ? (
+          <EventList groups={groups} onSelect={choose} />
         ) : (
-          <ComingSoon>Aucun rendez-vous dans cette catégorie.</ComingSoon>
+          <ComingSoon>Aucun rendez-vous à venir dans cette catégorie.</ComingSoon>
         )}
       </Section>
     </>

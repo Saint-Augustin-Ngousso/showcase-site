@@ -96,12 +96,13 @@ export default function Connexion() {
       .catch(() => setConfig({ unreachable: true }))
   }, [])
 
+
   async function afterLogin(promise) {
     setError('')
     try {
-      const me = await promise
-      const staff = ['secretariat', 'pretre', 'cure'].includes(me.role)
-      navigate(next || (staff ? '/espace' : '/connexion'), { replace: true })
+      await promise
+      // Tout le monde arrive sur l'accueil ; l'administration reste accessible depuis l'en-tête.
+      navigate(next || '/', { replace: true })
     } catch (err) {
       setError(err.message)
     }
@@ -109,63 +110,60 @@ export default function Connexion() {
 
   if (user && next && hasRole('secretariat')) return <Navigate to={next} replace />
 
+  if (user) {
+    return (
+      <Section>
+        <div className="mx-auto max-w-md">
+          <Card>
+            <div className="flex items-center gap-3">
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt="" className="h-12 w-12 rounded-full" referrerPolicy="no-referrer" />
+              ) : null}
+              <div>
+                <p className="font-medium">{user.name}</p>
+                <p className="text-sm text-muted">
+                  {user.email} · <span className="text-wine">{user.role_label}</span>
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <CtaLink to="/">Aller à l’accueil</CtaLink>
+              {hasRole('secretariat') ? <CtaLink to="/espace">Administration</CtaLink> : null}
+              <button type="button" onClick={logout} className="border border-wine px-4 py-2.5 text-xs text-wine uppercase sm:text-sm">
+                Se déconnecter
+              </button>
+            </div>
+          </Card>
+        </div>
+      </Section>
+    )
+  }
+
   return (
     <>
-      <PageHero kicker="Espace connecté" title={user ? `Bonjour ${user.first_name || user.name}` : 'Se connecter'}>
-        La consultation du site ne demande aucun compte. La connexion sert aux paroissiens qui veulent signer leurs
-        intentions, et à l’équipe pastorale pour gérer le site.
+      <PageHero kicker="Espace connecté" title="Se connecter">
+        La consultation du site ne demande aucun compte. La connexion permet de signer vos intentions et témoignages ;
+        elle donne aussi accès à l’administration pour l’équipe pastorale.
       </PageHero>
       <Section>
         <div className="mx-auto max-w-md">
           <Card>
-            {user ? (
-              <>
-                <div className="flex items-center gap-3">
-                  {user.avatar_url ? <img src={user.avatar_url} alt="" className="h-12 w-12 rounded-full" referrerPolicy="no-referrer" /> : null}
-                  <div>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted">{user.email}</p>
-                  </div>
-                </div>
-                <p className="mt-4 text-sm">
-                  Rôle : <span className="font-medium text-wine">{user.role_label}</span>
-                </p>
-                {!hasRole('secretariat') ? (
-                  <p className="mt-2 text-sm text-muted">
-                    Si vous faites partie de l’équipe pastorale, demandez au curé de vous attribuer votre rôle depuis
-                    l’administration du site.
-                  </p>
-                ) : null}
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {hasRole('secretariat') ? <CtaLink to="/espace">Administration du site</CtaLink> : null}
-                  <CtaLink to="/priere">Mur de prière</CtaLink>
-                  <button type="button" onClick={logout} className="border border-wine px-4 py-2.5 text-xs text-wine uppercase sm:text-sm">
-                    Se déconnecter
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h2 className="font-serif text-2xl text-wine">Avec votre compte Google</h2>
-                <p className="mt-2 mb-5 text-sm text-muted">Aucun mot de passe à retenir. Tout nouveau compte est « paroissien ».</p>
-                {config === null ? <p className="text-sm text-muted">Chargement…</p> : null}
-                {config?.unreachable ? (
-                  <p className="text-sm text-wine">Le serveur de la paroisse est injoignable pour le moment.</p>
-                ) : null}
-                {config?.google_client_id ? (
-                  <GoogleButton
-                    clientId={config.google_client_id}
-                    onCredential={(credential) => afterLogin(login('/auth/google/', { credential }))}
-                  />
-                ) : config && !config.unreachable ? (
-                  <p className="text-sm text-muted">La connexion Google n’est pas encore configurée sur le serveur.</p>
-                ) : null}
-                {config?.dev_login ? (
-                  <DevLogin onLogin={(email, role) => afterLogin(login('/auth/dev-login/', { email, role }))} />
-                ) : null}
-                {error ? <p className="mt-4 text-sm text-wine">{error}</p> : null}
-              </>
-            )}
+            <h2 className="font-serif text-2xl text-wine">Avec votre compte Google</h2>
+            <p className="mt-2 mb-5 text-sm text-muted">Aucun mot de passe à retenir.</p>
+            {config === null ? <p className="text-sm text-muted">Chargement…</p> : null}
+            {config?.unreachable ? <p className="text-sm text-wine">Le serveur de la paroisse est injoignable pour le moment.</p> : null}
+            {config?.google_client_id ? (
+              <GoogleButton
+                clientId={config.google_client_id}
+                onCredential={(credential) => afterLogin(login('/auth/google/', { credential }))}
+              />
+            ) : config && !config.unreachable ? (
+              <p className="text-sm text-muted">La connexion Google n’est pas encore configurée sur le serveur.</p>
+            ) : null}
+            {config?.dev_login ? (
+              <DevLogin onLogin={(email, role) => afterLogin(login('/auth/dev-login/', { email, role }))} />
+            ) : null}
+            {error ? <p className="mt-4 text-sm text-wine">{error}</p> : null}
           </Card>
         </div>
       </Section>

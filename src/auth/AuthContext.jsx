@@ -7,10 +7,12 @@ export const ROLE_LABELS = {
   paroissien: 'Paroissien',
   secretariat: 'Secrétariat',
   pretre: 'Prêtre',
+  admin: 'Administrateur',
   cure: 'Curé',
 }
 
-const RANK = { paroissien: 0, secretariat: 1, pretre: 2, cure: 3 }
+// Administrateur et curé ont les mêmes droits ; le titre de curé n'est porté que par une personne.
+const RANK = { paroissien: 0, secretariat: 1, pretre: 2, admin: 3, cure: 3 }
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(loadAuth)

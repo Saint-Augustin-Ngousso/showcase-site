@@ -1,6 +1,27 @@
+import { useState } from 'react'
 import { useSite } from '../data/SiteContext.jsx'
 import PastoralForm from '../components/PastoralForm.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
+
+function CopyButton({ value }) {
+  const [done, setDone] = useState(false)
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(value)
+      setDone(true)
+      setTimeout(() => setDone(false), 2000)
+    } catch {
+      /* presse-papiers indisponible : le texte reste sélectionnable */
+    }
+  }
+  return (
+    <button type="button" onClick={copy} className="ml-2 border border-wine/30 px-1.5 py-0.5 text-[11px] text-wine uppercase">
+      {done ? 'Copié' : 'Copier'}
+    </button>
+  )
+}
+
+const COPYABLE = new Set(['Numéro', 'Numéro de compte', 'RIB / IBAN', 'SWIFT / BIC'])
 
 function DonationCard({ account }) {
   const lines = [
@@ -18,7 +39,10 @@ function DonationCard({ account }) {
         {lines.map(([label, value]) => (
           <div key={label} className="flex flex-wrap gap-x-2">
             <dt className="text-muted">{label} :</dt>
-            <dd className="font-medium break-all select-all">{value}</dd>
+            <dd className="font-medium break-all select-all">
+              {value}
+              {COPYABLE.has(label) ? <CopyButton value={value} /> : null}
+            </dd>
           </div>
         ))}
       </dl>
@@ -119,6 +143,13 @@ export default function Contact() {
 
       <Section id="soutien" title="Dons, offrandes et quêtes">
         {parish.donationsIntro ? <p className="mb-6 max-w-2xl whitespace-pre-line text-muted">{parish.donationsIntro}</p> : null}
+        {donationAccounts.length ? (
+          <ol className="mb-6 grid max-w-3xl gap-1 text-sm text-muted sm:grid-cols-3 sm:gap-4">
+            <li><span className="font-medium text-wine">1.</span> Choisissez un compte ci-dessous et copiez le numéro.</li>
+            <li><span className="font-medium text-wine">2.</span> Envoyez votre don depuis votre application Mobile Money ou votre banque.</li>
+            <li><span className="font-medium text-wine">3.</span> Indiquez en motif « Don », « Messe » ou « Presbytère », puis gardez votre reçu.</li>
+          </ol>
+        ) : null}
         {donationAccounts.length ? (
           <div className="grid gap-4 md:grid-cols-3">
             {donationAccounts.map((account) => (
