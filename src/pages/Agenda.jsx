@@ -4,6 +4,7 @@ import { groupUpcoming, isoDay } from '../data/dates.js'
 import { useSite } from '../data/SiteContext.jsx'
 import EventList from '../components/EventList.jsx'
 import { Card, ComingSoon, PageHero, Section } from '../components/Layout.jsx'
+import { locale, t } from '../i18n/index.jsx'
 
 function icsEscape(value) {
   return String(value || '').replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n')
@@ -38,7 +39,7 @@ function downloadIcs(event) {
 }
 
 const FILTERS = [
-  { id: '', label: 'Tout' },
+  { id: '', label: 'Tout' }, // libellés traduits au rendu
   { id: 'paroisse', label: 'Paroisse' },
   { id: 'recollection', label: 'Récollections' },
   { id: 'jeunes', label: 'Jeunes' },
@@ -61,14 +62,14 @@ export default function Agenda() {
     const start = new Date(month.getFullYear(), month.getMonth(), 1)
     const end = new Date(month.getFullYear(), month.getMonth() + 1, 0)
     const pad = (start.getDay() + 6) % 7
-    return { pad, count: end.getDate(), label: month.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) }
+    return { pad, count: end.getDate(), label: month.toLocaleDateString(locale(), { month: 'long', year: 'numeric' }) }
   }, [month])
   const [selected, setSelected] = useState(upcoming[0] || events[0])
   const today = isoDay()
   const detailRef = useRef(null)
   const filtered = (showPast ? events : upcoming).filter((item) => !filter || item.category === filter)
   const groups = showPast
-    ? [{ id: 'all', label: 'Toute l’année pastorale', items: filtered }]
+    ? [{ id: 'all', label: t('Toute l’année pastorale'), items: filtered }]
     : groupUpcoming(filtered, today)
 
   function choose(event) {
@@ -84,11 +85,11 @@ export default function Agenda() {
 
   return (
     <>
-      <PageHero kicker="Vie de la paroisse" title="Agenda et actualités">
-        Lancement de l’année, récollections par métier, activités des jeunes et annonces de la semaine.
+      <PageHero kicker={t("Vie de la paroisse")} title={t("Agenda et actualités")}>
+        {t("Lancement de l’année, récollections par métier, activités des jeunes et annonces de la semaine.")}
       </PageHero>
 
-      <Section eyebrow="Annonces" title="En ce moment">
+      <Section eyebrow={t("Annonces")} title={t("En ce moment")}>
         {news.length ? (
           <div className="grid gap-4 md:grid-cols-2">
             {news.map((item) => (
@@ -96,7 +97,7 @@ export default function Agenda() {
                 {item.image ? <img src={item.image} alt="" className="h-44 w-full object-cover" loading="lazy" /> : null}
                 <div className={item.image ? 'p-5' : ''}>
                   <p className="text-xs tracking-[0.2em] text-wine uppercase">
-                    {item.pinned ? 'À la une · ' : ''}
+                    {item.pinned ? `${t('À la une')} · ` : ''}
                     {item.category ? `${item.category} · ` : ''}
                     {formatDateShort(item.date)}
                   </p>
@@ -107,22 +108,22 @@ export default function Agenda() {
             ))}
           </div>
         ) : (
-          <ComingSoon>Les annonces de la semaine seront publiées ici.</ComingSoon>
+          <ComingSoon>{t("Les annonces de la semaine seront publiées ici.")}</ComingSoon>
         )}
       </Section>
 
-      <Section tone="stone" title="Calendrier">
+      <Section tone="stone" title={t("Calendrier")}>
         <div className="mb-6 flex items-center justify-between gap-3">
           <button type="button" className="border border-wine px-3 py-2 text-sm text-wine" onClick={() => shiftMonth(-1)}>
-            Mois précédent
+            {t("Mois précédent")}
           </button>
           <p className="font-serif text-2xl capitalize sm:text-3xl">{days.label}</p>
           <button type="button" className="border border-wine px-3 py-2 text-sm text-wine" onClick={() => shiftMonth(1)}>
-            Mois suivant
+            {t("Mois suivant")}
           </button>
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-xs uppercase text-muted">
-          {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day) => (
+          {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((d) => t(d)).map((day) => (
             <div key={day} className="py-2">
               {day}
             </div>
@@ -146,7 +147,7 @@ export default function Agenda() {
               >
                 <span className="block text-sm">
                   {day}
-                  {iso === today ? <span className="ml-1 text-[9px] uppercase">auj.</span> : null}
+                  {iso === today ? <span className="ml-1 text-[9px] uppercase">{t("auj.")}</span> : null}
                 </span>
                 {dayEvents[0] ? <span className="mt-1 block text-[10px] leading-tight normal-case">{dayEvents[0].title}</span> : null}
               </button>
@@ -168,14 +169,14 @@ export default function Agenda() {
             </p>
             {selected.description ? <p className="mt-3 whitespace-pre-line text-muted">{selected.description}</p> : null}
             <button type="button" className="mt-5 bg-wine px-4 py-2 text-sm text-cream uppercase" onClick={() => downloadIcs(selected)}>
-              Ajouter à mon calendrier
+              {t("Ajouter à mon calendrier")}
             </button>
           </Card>
           </div>
         ) : null}
       </Section>
 
-      <Section title="Les rendez-vous">
+      <Section title={t("Les rendez-vous")}>
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {FILTERS.map((item) => (
             <button
@@ -184,18 +185,18 @@ export default function Agenda() {
               onClick={() => setFilter(item.id)}
               className={`border px-3 py-1.5 text-xs uppercase ${filter === item.id ? 'border-wine bg-wine text-cream' : 'border-wine/30 text-wine'}`}
             >
-              {item.label}
+              {t(item.label)}
             </button>
           ))}
           <label className="ml-auto flex items-center gap-2 text-sm text-muted">
             <input type="checkbox" checked={showPast} onChange={(e) => setShowPast(e.target.checked)} className="accent-wine" />
-            Afficher les dates passées
+            {t("Afficher les dates passées")}
           </label>
         </div>
         {groups.length ? (
           <EventList groups={groups} onSelect={choose} />
         ) : (
-          <ComingSoon>Aucun rendez-vous à venir dans cette catégorie.</ComingSoon>
+          <ComingSoon>{t("Aucun rendez-vous à venir dans cette catégorie.")}</ComingSoon>
         )}
       </Section>
     </>

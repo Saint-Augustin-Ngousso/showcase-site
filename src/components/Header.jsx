@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.jsx'
 import { nav } from '../data/content.js'
 import { useSite } from '../data/SiteContext.jsx'
 import SearchBox from './SearchBox.jsx'
+import { LanguageSwitch, t } from '../i18n/index.jsx'
 
 function Cross({ className = 'h-9 w-9' }) {
   return (
@@ -26,20 +27,21 @@ export default function Header() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 text-[11px] tracking-wide sm:px-6 sm:text-xs">
           <p className="truncate">{parish.diocese} · {parish.zone}</p>
           <div className="flex shrink-0 items-center gap-3">
+            <LanguageSwitch className="text-cream" />
             <NavLink to="/messes" className="text-gold-light">
-              Horaires des messes
+              {t("Horaires des messes")}
             </NavLink>
             <NavLink to="/contact" className="hidden sm:inline">
-              Contact
+              {t("Contact")}
             </NavLink>
             {user ? (
               <>
                 {hasRole('secretariat') ? (
                   <NavLink to="/espace" className="text-gold-light">
-                    Administration
+                    {t("Administration")}
                   </NavLink>
                 ) : null}
-                <NavLink to="/connexion" className="flex items-center gap-1.5" title="Mon compte">
+                <NavLink to="/connexion" className="flex items-center gap-1.5" title={t("Mon compte")}>
                   {user.avatar_url ? (
                     <img src={user.avatar_url} alt="" className="h-5 w-5 rounded-full" referrerPolicy="no-referrer" />
                   ) : null}
@@ -47,7 +49,7 @@ export default function Header() {
                 </NavLink>
               </>
             ) : (
-              <NavLink to="/connexion">Se connecter</NavLink>
+              <NavLink to="/connexion">{t("Se connecter")}</NavLink>
             )}
           </div>
         </div>
@@ -67,7 +69,7 @@ export default function Header() {
             </span>
           </NavLink>
 
-          <nav className="hidden items-center gap-x-3 2xl:flex" aria-label="Navigation principale">
+          <nav className="hidden items-center gap-x-3 2xl:flex" aria-label={t("Navigation principale")}>
             {nav.map((item) => (
               <NavLink
                 key={item.to}
@@ -76,7 +78,7 @@ export default function Header() {
                   `whitespace-nowrap text-sm ${isActive ? 'border-b border-gold pb-0.5 text-wine' : 'text-muted hover:text-wine'}`
                 }
               >
-                {item.label}
+                {t(item.label)}
               </NavLink>
             ))}
           </nav>
@@ -87,7 +89,7 @@ export default function Header() {
               className="border border-wine/30 px-3 py-2 text-xs text-wine"
               onClick={() => setSearchOpen((v) => !v)}
             >
-              Recherche
+              {t("Recherche")}
             </button>
             <button
               type="button"
@@ -95,7 +97,7 @@ export default function Header() {
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
             >
-              {open ? 'Fermer' : 'Menu'}
+              {open ? t('Fermer') : t('Menu')}
             </button>
           </div>
         </div>
@@ -107,9 +109,9 @@ export default function Header() {
         ) : null}
 
         {open ? (
-          <nav className="grid gap-1 border-t border-gold/20 px-4 py-4 2xl:hidden" aria-label="Menu mobile">
+          <nav className="grid gap-1 border-t border-gold/20 px-4 py-4 2xl:hidden" aria-label={t("Menu mobile")}>
             <NavLink to="/" end onClick={() => setOpen(false)} className="py-2 text-wine">
-              Accueil
+              {t("Accueil")}
             </NavLink>
             {nav.map((item) => (
               <NavLink
@@ -118,19 +120,19 @@ export default function Header() {
                 onClick={() => setOpen(false)}
                 className={({ isActive }) => `py-2 ${isActive ? 'font-medium text-wine' : 'text-muted'}`}
               >
-                {item.label}
+                {t(item.label)}
               </NavLink>
             ))}
             <div className="mt-3 grid gap-2">
               <NavLink to="/messes" className="bg-wine px-4 py-3 text-center text-cream" onClick={() => setOpen(false)}>
-                Horaires des messes
+                {t("Horaires des messes")}
               </NavLink>
               <NavLink to="/contact" className="border border-wine px-4 py-3 text-center text-wine" onClick={() => setOpen(false)}>
-                Contact
+                {t("Contact")}
               </NavLink>
               {parish.whatsapp ? (
                 <a href={parish.whatsapp} className="border border-wine px-4 py-3 text-center text-wine">
-                  WhatsApp
+                  {t("WhatsApp")}
                 </a>
               ) : null}
               <NavLink
@@ -138,7 +140,7 @@ export default function Header() {
                 className="px-4 py-3 text-center text-sm text-wine underline"
                 onClick={() => setOpen(false)}
               >
-                {user ? (hasRole('secretariat') ? 'Administration du site' : 'Mon compte') : 'Se connecter avec Google'}
+                {user ? (hasRole('secretariat') ? t('Administration du site') : t('Mon compte')) : t('Se connecter avec Google')}
               </NavLink>
             </div>
           </nav>

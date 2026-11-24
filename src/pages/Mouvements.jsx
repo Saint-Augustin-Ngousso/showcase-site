@@ -3,9 +3,10 @@ import { useSite } from '../data/SiteContext.jsx'
 import PastoralForm from '../components/PastoralForm.jsx'
 import { Placeholder } from '../components/Media.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, PhotoGrid, Section } from '../components/Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 export function AssociationCard({ item }) {
-  const line = item.summary || (item.patronSaint ? `Saint patron : ${item.patronSaint}` : item.charism)
+  const line = item.summary || (item.patronSaint ? t('Saint patron : {saint}', { saint: item.patronSaint }) : item.charism)
   return (
     <Link
       to={`/mouvements/${item.slug}`}
@@ -19,8 +20,8 @@ export function AssociationCard({ item }) {
       <span className="flex flex-1 flex-col p-4">
         <span className="font-serif text-xl leading-tight text-wine">{item.name}</span>
         {line ? <span className="mt-1 line-clamp-2 text-sm text-muted">{line}</span> : null}
-        {item.meeting ? <span className="mt-2 text-xs text-muted">Réunion : {item.meeting}</span> : null}
-        <span className="mt-auto pt-3 text-xs tracking-wide text-wine uppercase group-hover:underline">Découvrir le groupe →</span>
+        {item.meeting ? <span className="mt-2 text-xs text-muted">{t('Réunion :')} {item.meeting}</span> : null}
+        <span className="mt-auto pt-3 text-xs tracking-wide text-wine uppercase group-hover:underline">{t("Découvrir le groupe →")}</span>
       </span>
     </Link>
   )
@@ -32,17 +33,16 @@ export default function Mouvements() {
 
   return (
     <>
-      <PageHero kicker="Vie associative" title="Mouvements et services">
-        {total} associations en {associationPlatforms.length} plateformes, chorales, groupes de jeunes, conseils et
-        commissions.
+      <PageHero kicker={t("Vie associative")} title={t("Mouvements et services")}>
+        {t('{total} associations en {n} plateformes, chorales, groupes de jeunes, conseils et commissions.', { total, n: associationPlatforms.length })}
       </PageHero>
 
-      <Section title={`Les associations, en ${associationPlatforms.length} plateformes`}>
-        <p className="mb-6 max-w-2xl text-muted">Cliquez sur un groupe pour découvrir sa fiche : histoire, missions, saint patron et photos.</p>
-        <nav className="mb-10 flex flex-wrap gap-2" aria-label="Plateformes">
+      <Section title={t('Les associations, en {n} plateformes', { n: associationPlatforms.length })}>
+        <p className="mb-6 max-w-2xl text-muted">{t("Cliquez sur un groupe pour découvrir sa fiche : histoire, missions, saint patron et photos.")}</p>
+        <nav className="mb-10 flex flex-wrap gap-2" aria-label={t("Plateformes")}>
           {associationPlatforms.map((platform) => (
             <a key={platform.id} href={`#${platform.id}`} className="border border-wine/30 px-3 py-1.5 text-sm text-wine hover:bg-wine hover:text-cream">
-              {platform.name.replace('Plateforme ', '')} ({platform.items.length})
+              {platform.name.replace('Plateforme ', '').replace(/ platform$/i, '')} ({platform.items.length})
             </a>
           ))}
         </nav>
@@ -61,15 +61,15 @@ export default function Mouvements() {
         </div>
       </Section>
 
-      <Section id="chorales" tone="stone" title="Chorales">
-        {choirs.chaplain ? <p className="mb-4 text-muted">Aumônier : {choirs.chaplain}.</p> : null}
+      <Section id="chorales" tone="stone" title={t("Chorales")}>
+        {choirs.chaplain ? <p className="mb-4 text-muted">{t('Aumônier :')} {choirs.chaplain}.</p> : null}
         {choirs.items.length ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {choirs.items.map((choir) => (
               <Card key={choir.name}>
                 <h3 className="font-serif text-xl text-wine">{choir.name}</h3>
-                {choir.leader ? <p className="mt-2 text-sm text-muted">Responsable : {choir.leader}</p> : null}
-                {choir.masses ? <p className="mt-1 text-sm text-muted">Anime : {choir.masses}</p> : null}
+                {choir.leader ? <p className="mt-2 text-sm text-muted">{t('Responsable :')} {choir.leader}</p> : null}
+                {choir.masses ? <p className="mt-1 text-sm text-muted">{t('Anime :')} {choir.masses}</p> : null}
               </Card>
             ))}
           </div>
@@ -78,8 +78,8 @@ export default function Mouvements() {
         )}
       </Section>
 
-      <Section id="jeunes" title="Groupes de jeunes">
-        {youthGroups.chaplain ? <p className="mb-6 text-muted">Suivis par {youthGroups.chaplain}.</p> : null}
+      <Section id="jeunes" title={t("Groupes de jeunes")}>
+        {youthGroups.chaplain ? <p className="mb-6 text-muted">{t('Suivis par {name}.', { name: youthGroups.chaplain })}</p> : null}
         <PhotoGrid photos={gallery.filter((item) => item.category === 'Jeunes').slice(0, 3)} className="mb-8" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(youthGroups.associations || []).map((item) => (
@@ -87,11 +87,11 @@ export default function Mouvements() {
           ))}
         </div>
         <div className="mt-6">
-          <CtaLink to="/mediatheque">Voir plus de photos</CtaLink>
+          <CtaLink to="/mediatheque">{t("Voir plus de photos")}</CtaLink>
         </div>
       </Section>
 
-      <Section tone="wine" title="Conseils">
+      <Section tone="wine" title={t("Conseils")}>
         <div className="grid gap-4 md:grid-cols-3">
           {councils.map((item) => (
             <article key={item.name} className="border border-cream/20 p-5">
@@ -102,11 +102,11 @@ export default function Mouvements() {
           ))}
         </div>
         {councils.some((c) => !c.members) ? (
-          <p className="mt-6 text-sm text-cream/70">Les membres des bureaux seront publiés après les nominations.</p>
+          <p className="mt-6 text-sm text-cream/70">{t("Les membres des bureaux seront publiés après les nominations.")}</p>
         ) : null}
       </Section>
 
-      <Section title="Commissions">
+      <Section title={t("Commissions")}>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {commissions.map((item) => (
             <Card key={item}>
@@ -116,7 +116,7 @@ export default function Mouvements() {
         </div>
         {proposedCommissions.length ? (
           <>
-            <h3 className="font-serif mt-10 text-2xl">Propositions au curé</h3>
+            <h3 className="font-serif mt-10 text-2xl">{t("Propositions au curé")}</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {proposedCommissions.map((item) => (
                 <Card key={item.name}>
@@ -129,12 +129,12 @@ export default function Mouvements() {
         ) : null}
       </Section>
 
-      <Section id="servir" tone="stone" title="Rejoindre un mouvement">
+      <Section id="servir" tone="stone" title={t("Rejoindre un mouvement")}>
         <div className="mx-auto max-w-2xl">
           <PastoralForm
             endpoint="/requests/"
-            submitLabel="Proposer mon service"
-            successTitle="Merci pour ce don de vous-même"
+            submitLabel={t("Proposer mon service")}
+            successTitle={t("Merci pour ce don de vous-même")}
             toPayload={(f) => ({ kind: 'benevolat', name: f.prenom, contact: f.contact, subject: f.competence, message: f.message })}
             fields={[
               { name: 'prenom', label: 'Prénom', required: true },

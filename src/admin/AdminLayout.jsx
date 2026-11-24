@@ -10,6 +10,7 @@ const SECTIONS = [
     title: 'La paroisse',
     items: [
       { to: '/espace/parametres', label: 'Fiche de la paroisse', role: 'secretariat', hint: 'Contacts, textes, image d’accueil' },
+      { r: 'history' },
       { r: 'munera' },
       { r: 'projects' },
     ],

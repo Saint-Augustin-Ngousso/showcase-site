@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useSite } from '../data/SiteContext.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, PhotoGrid, Section } from '../components/Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 export default function Mediatheque() {
   const { downloads, gallery } = useSite()
@@ -10,11 +11,11 @@ export default function Mediatheque() {
 
   return (
     <>
-      <PageHero kicker="Mémoire" title="Galerie photos">
-        Des images de la vie de Saint Augustin de Ngousso, publiées avec l’accord des personnes visibles.
+      <PageHero kicker={t("Mémoire")} title={t("Galerie photos")}>
+        {t("Des images de la vie de Saint Augustin de Ngousso, publiées avec l’accord des personnes visibles.")}
       </PageHero>
 
-      <Section title="La vie paroissiale">
+      <Section title={t("La vie paroissiale")}>
         {categories.length > 1 ? (
           <div className="mb-6 flex flex-wrap gap-2">
             {['', ...categories].map((item) => (
@@ -24,15 +25,15 @@ export default function Mediatheque() {
                 onClick={() => setCategory(item)}
                 className={`border px-3 py-1.5 text-xs uppercase ${category === item ? 'border-wine bg-wine text-cream' : 'border-wine/30 text-wine'}`}
               >
-                {item || 'Toutes'}
+                {item || t('Toutes')}
               </button>
             ))}
           </div>
         ) : null}
-        {photos.length ? <PhotoGrid photos={photos} /> : <ComingSoon>Les photos des événements seront publiées ici.</ComingSoon>}
+        {photos.length ? <PhotoGrid photos={photos} /> : <ComingSoon>{t("Les photos des événements seront publiées ici.")}</ComingSoon>}
       </Section>
 
-      <Section tone="stone" title="Documents">
+      <Section tone="stone" title={t("Documents")}>
         <ul className="divide-y divide-gold/20 border border-gold/30 bg-white">
           {downloads.map((item) => (
             <li key={item.title + item.date} className="flex items-center justify-between gap-4 px-5 py-4">
@@ -49,11 +50,11 @@ export default function Mediatheque() {
         </ul>
       </Section>
 
-      <Section title="Vidéos">
+      <Section title={t("Vidéos")}>
         <Card>
-          <p className="text-muted">Homélies filmées, enseignements et événements. Aucune vidéo ne se lance toute seule.</p>
+          <p className="text-muted">{t("Homélies filmées, enseignements et événements. Aucune vidéo ne se lance toute seule.")}</p>
           <div className="mt-6">
-            <CtaLink to="/foi#homelies">Enseignements et homélies</CtaLink>
+            <CtaLink to="/foi#homelies">{t("Enseignements et homélies")}</CtaLink>
           </div>
         </Card>
       </Section>

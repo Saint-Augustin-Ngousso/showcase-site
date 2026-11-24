@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { nav } from '../data/content.js'
 import { useSite } from '../data/SiteContext.jsx'
+import { t } from '../i18n/index.jsx'
 
 export default function Footer() {
   const { parish } = useSite()
@@ -21,25 +22,25 @@ export default function Footer() {
           <p className="mt-4 text-sm text-cream/70">{parish.address}</p>
           {parish.whatsapp ? (
             <a href={parish.whatsapp} className="mt-4 inline-flex border border-gold-light px-3 py-2 text-xs uppercase">
-              WhatsApp paroissial
+              {t("WhatsApp paroissial")}
             </a>
           ) : (
-            <p className="mt-4 text-xs text-cream/50">WhatsApp paroissial à publier</p>
+            <p className="mt-4 text-xs text-cream/50">{t("WhatsApp paroissial à publier")}</p>
           )}
         </div>
 
         <div>
-          <p className="text-sm tracking-[0.2em] text-gold-light uppercase">Parcourir</p>
+          <p className="text-sm tracking-[0.2em] text-gold-light uppercase">{t("Parcourir")}</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <NavLink to="/" className="hover:text-gold-light">
-                Accueil
+                {t("Accueil")}
               </NavLink>
             </li>
             {nav.map((item) => (
               <li key={item.to}>
                 <NavLink to={item.to} className="hover:text-gold-light">
-                  {item.label}
+                  {t(item.label)}
                 </NavLink>
               </li>
             ))}
@@ -47,47 +48,47 @@ export default function Footer() {
         </div>
 
         <div>
-          <p className="text-sm tracking-[0.2em] text-gold-light uppercase">Premier pas</p>
+          <p className="text-sm tracking-[0.2em] text-gold-light uppercase">{t("Premier pas")}</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              <NavLink to="/messes" className="hover:text-gold-light">Horaires des messes</NavLink>
+              <NavLink to="/messes" className="hover:text-gold-light">{t("Horaires des messes")}</NavLink>
             </li>
             <li>
-              <NavLink to="/pretres#rencontrer" className="hover:text-gold-light">Parler à un prêtre</NavLink>
+              <NavLink to="/pretres#rencontrer" className="hover:text-gold-light">{t("Parler à un prêtre")}</NavLink>
             </li>
             <li>
-              <NavLink to="/priere" className="hover:text-gold-light">Demander une prière</NavLink>
+              <NavLink to="/priere" className="hover:text-gold-light">{t("Demander une prière")}</NavLink>
             </li>
             <li>
-              <NavLink to="/mouvements#servir" className="hover:text-gold-light">Rejoindre un mouvement</NavLink>
+              <NavLink to="/mouvements#servir" className="hover:text-gold-light">{t("Rejoindre un mouvement")}</NavLink>
             </li>
             <li>
-              <NavLink to="/contact#soutien" className="hover:text-gold-light">Soutenir la paroisse</NavLink>
+              <NavLink to="/contact#soutien" className="hover:text-gold-light">{t("Soutenir la paroisse")}</NavLink>
             </li>
           </ul>
         </div>
 
         <div>
-          <p className="text-sm tracking-[0.2em] text-gold-light uppercase">Aussi</p>
+          <p className="text-sm tracking-[0.2em] text-gold-light uppercase">{t("Aussi")}</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              <NavLink to="/foi" className="hover:text-gold-light">Enseignements</NavLink>
+              <NavLink to="/foi" className="hover:text-gold-light">{t("Enseignements")}</NavLink>
             </li>
             <li>
-              <NavLink to="/mediatheque" className="hover:text-gold-light">Galerie photos</NavLink>
+              <NavLink to="/mediatheque" className="hover:text-gold-light">{t("Galerie photos")}</NavLink>
             </li>
             <li>
-              <NavLink to="/connexion" className="hover:text-gold-light">Espace connecté</NavLink>
+              <NavLink to="/connexion" className="hover:text-gold-light">{t("Espace connecté")}</NavLink>
             </li>
             {socials.map((item) => (
-              <li key={item.label}>
-                <a href={item.href} target="_blank" rel="noreferrer" className="hover:text-gold-light">{item.label}</a>
+              <li key={t(item.label)}>
+                <a href={item.href} target="_blank" rel="noreferrer" className="hover:text-gold-light">{t(item.label)}</a>
               </li>
             ))}
           </ul>
           <p className="mt-6 text-xs text-cream/50">{parish.slogan}</p>
           <NavLink to="/confidentialite" className="mt-2 block text-xs text-cream/50 hover:text-gold-light">
-            Politique de confidentialité
+            {t("Politique de confidentialité")}
           </NavLink>
         </div>
       </div>

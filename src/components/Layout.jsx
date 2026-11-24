@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import Header from './Header.jsx'
 import Footer from './Footer.jsx'
 import ActionBar from './ActionBar.jsx'
+import { t } from '../i18n/index.jsx'
 
 export default function Layout() {
   const location = useLocation()
@@ -21,7 +22,7 @@ export default function Layout() {
         href="#contenu"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-wine focus:px-4 focus:py-2 focus:text-cream"
       >
-        Aller au contenu
+        {t("Aller au contenu")}
       </a>
       <Header />
       <main id="contenu">

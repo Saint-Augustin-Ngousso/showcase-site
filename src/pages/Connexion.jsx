@@ -3,6 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ROLE_LABELS, useAuth } from '../auth/AuthContext.jsx'
 import { Card, CtaLink, PageHero, Section } from '../components/Layout.jsx'
 import { api } from '../lib/api.js'
+import { getLang, t } from '../i18n/index.jsx'
 
 function loadGoogleScript() {
   if (window.google?.accounts?.id) return Promise.resolve()
@@ -35,7 +36,7 @@ function GoogleButton({ clientId, onCredential }) {
           theme: 'outline',
           size: 'large',
           text: 'continue_with',
-          locale: 'fr',
+          locale: getLang(),
           width: 300,
         })
       })
@@ -44,7 +45,7 @@ function GoogleButton({ clientId, onCredential }) {
       cancelled = true
     }
   }, [clientId, onCredential])
-  if (failed) return <p className="text-sm text-wine">Le service Google est injoignable. Vérifiez votre connexion.</p>
+  if (failed) return <p className="text-sm text-wine">{t("Le service Google est injoignable. Vérifiez votre connexion.")}</p>
   return <div ref={ref} className="min-h-11" />
 }
 
@@ -59,11 +60,11 @@ function DevLogin({ onLogin }) {
         onLogin(email, role)
       }}
     >
-      <p className="text-xs tracking-[0.2em] text-wine uppercase">Mode test (local uniquement)</p>
+      <p className="text-xs tracking-[0.2em] text-wine uppercase">{t("Mode test (local uniquement)")}</p>
       <input
         type="email"
         required
-        placeholder="adresse@exemple.cm"
+        placeholder={t("adresse@exemple.cm")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="border border-stone bg-cream px-3 py-2 text-sm"
@@ -76,7 +77,7 @@ function DevLogin({ onLogin }) {
         ))}
       </select>
       <button type="submit" className="bg-wine px-4 py-2 text-sm text-cream uppercase">
-        Entrer en test
+        {t("Entrer en test")}
       </button>
     </form>
   )
@@ -127,10 +128,10 @@ export default function Connexion() {
               </div>
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
-              <CtaLink to="/">Aller à l’accueil</CtaLink>
-              {hasRole('secretariat') ? <CtaLink to="/espace">Administration</CtaLink> : null}
+              <CtaLink to="/">{t("Aller à l’accueil")}</CtaLink>
+              {hasRole('secretariat') ? <CtaLink to="/espace">{t("Administration")}</CtaLink> : null}
               <button type="button" onClick={logout} className="border border-wine px-4 py-2.5 text-xs text-wine uppercase sm:text-sm">
-                Se déconnecter
+                {t("Se déconnecter")}
               </button>
             </div>
           </Card>
@@ -141,24 +142,23 @@ export default function Connexion() {
 
   return (
     <>
-      <PageHero kicker="Espace connecté" title="Se connecter">
-        La consultation du site ne demande aucun compte. La connexion permet de signer vos intentions et témoignages ;
-        elle donne aussi accès à l’administration pour l’équipe pastorale.
+      <PageHero kicker={t("Espace connecté")} title={t("Se connecter")}>
+        {t('La consultation du site ne demande aucun compte. La connexion permet de signer vos intentions et témoignages ; elle donne aussi accès à l’administration pour l’équipe pastorale.')}
       </PageHero>
       <Section>
         <div className="mx-auto max-w-md">
           <Card>
-            <h2 className="font-serif text-2xl text-wine">Avec votre compte Google</h2>
-            <p className="mt-2 mb-5 text-sm text-muted">Aucun mot de passe à retenir.</p>
-            {config === null ? <p className="text-sm text-muted">Chargement…</p> : null}
-            {config?.unreachable ? <p className="text-sm text-wine">Le serveur de la paroisse est injoignable pour le moment.</p> : null}
+            <h2 className="font-serif text-2xl text-wine">{t("Avec votre compte Google")}</h2>
+            <p className="mt-2 mb-5 text-sm text-muted">{t("Aucun mot de passe à retenir.")}</p>
+            {config === null ? <p className="text-sm text-muted">{t("Chargement…")}</p> : null}
+            {config?.unreachable ? <p className="text-sm text-wine">{t("Le serveur de la paroisse est injoignable pour le moment.")}</p> : null}
             {config?.google_client_id ? (
               <GoogleButton
                 clientId={config.google_client_id}
                 onCredential={(credential) => afterLogin(login('/auth/google/', { credential }))}
               />
             ) : config && !config.unreachable ? (
-              <p className="text-sm text-muted">La connexion Google n’est pas encore configurée sur le serveur.</p>
+              <p className="text-sm text-muted">{t("La connexion Google n’est pas encore configurée sur le serveur.")}</p>
             ) : null}
             {config?.dev_login ? (
               <DevLogin onLogin={(email, role) => afterLogin(login('/auth/dev-login/', { email, role }))} />

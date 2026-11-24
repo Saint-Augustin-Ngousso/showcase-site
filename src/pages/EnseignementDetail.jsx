@@ -3,9 +3,10 @@ import { formatDate } from '../data/content.js'
 import { useSite } from '../data/SiteContext.jsx'
 import { PhotoGallery, VideoEmbed } from '../components/Media.jsx'
 import { CtaLink, PageHero, Section } from '../components/Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 export function homilyKind(item) {
-  return item.kind === 'enseignement' ? 'Enseignement' : 'Homélie'
+  return item.kind === 'enseignement' ? t('Enseignement') : t('Homélie')
 }
 
 export default function EnseignementDetail() {
@@ -37,7 +38,7 @@ export default function EnseignementDetail() {
 
           {audios.length ? (
             <div>
-              <h2 className="font-serif text-2xl">Écouter</h2>
+              <h2 className="font-serif text-2xl">{t("Écouter")}</h2>
               <div className="mt-3 grid gap-3">
                 {audios.map((audio) => (
                   <div key={audio.id} className="border border-gold/30 bg-white p-3">
@@ -51,7 +52,7 @@ export default function EnseignementDetail() {
 
           {videos.length ? (
             <div>
-              <h2 className="font-serif text-2xl">Regarder</h2>
+              <h2 className="font-serif text-2xl">{t("Regarder")}</h2>
               <div className="mt-3 grid gap-4">
                 {videos.map((url) => (
                   <VideoEmbed key={url} url={url} title={item.title} />
@@ -63,12 +64,12 @@ export default function EnseignementDetail() {
       </Section>
 
       {images.length ? (
-        <Section tone="stone" title="En images">
+        <Section tone="stone" title={t("En images")}>
           <PhotoGallery items={images} />
         </Section>
       ) : null}
 
-      <Section title={others.length ? 'D’autres enseignements' : ''}>
+      <Section title={others.length ? t('D’autres enseignements') : ''}>
         {others.length ? (
           <ul className="grid gap-3 md:grid-cols-3">
             {others.map((h) => (
@@ -82,7 +83,7 @@ export default function EnseignementDetail() {
           </ul>
         ) : null}
         <p className="mt-8">
-          <CtaLink to="/foi#homelies">Tous les enseignements</CtaLink>
+          <CtaLink to="/foi#homelies">{t("Tous les enseignements")}</CtaLink>
         </p>
       </Section>
     </>

@@ -1,13 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api.js'
 import * as fallback from './content.js'
+import { getLang, locale, t } from '../i18n/index.jsx'
 
 // Contenu du site servi par le backend (/api/site/).
 // - Dernière version reçue gardée dans le navigateur : affichage immédiat aux visites suivantes.
 // - Si le backend est injoignable, le contenu de content.js sert de secours.
 
-const CACHE_KEY = 'paroisse.site.v1'
-const SiteContext = createContext(null)
+// Une copie par langue : la version anglaise ne remplace pas la française.
+const cacheKey = () => `paroisse.site.v2.${getLang()}`
+export const SiteContext = createContext(null)
 
 const fallbackPayload = {
   parish: fallback.parish,
@@ -37,7 +39,7 @@ const fallbackPayload = {
 
 function readCache() {
   try {
-    return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null')
+    return JSON.parse(localStorage.getItem(cacheKey()) || 'null')
   } catch {
     return null
   }
@@ -45,21 +47,21 @@ function readCache() {
 
 function writeCache(data) {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data))
+    localStorage.setItem(cacheKey(), JSON.stringify(data))
   } catch {
     /* stockage plein ou bloqué : sans importance */
   }
 }
 
-export function whatsappLink(parish, text = 'Bonjour, je vous écris depuis le site de la paroisse Saint Augustin de Ngousso.') {
+export function whatsappLink(parish, text = t('Bonjour, je vous écris depuis le site de la paroisse Saint Augustin de Ngousso.')) {
   const number = (parish?.whatsappNumber || '').replace(/\D/g, '')
   return number ? `https://wa.me/${number}?text=${encodeURIComponent(text)}` : null
 }
 
 export function massPlaces(item) {
-  if (item.chapelle && item.petiteEglise) return 'Chapelle et petite église'
-  if (item.chapelle) return 'Chapelle'
-  if (item.petiteEglise) return 'Petite église'
+  if (item.chapelle && item.petiteEglise) return t('Chapelle et petite église')
+  if (item.chapelle) return t('Chapelle')
+  if (item.petiteEglise) return t('Petite église')
   return ''
 }
 
@@ -84,7 +86,7 @@ function withAssociations(platforms) {
   )
 }
 
-function enrich(data) {
+export function enrich(data) {
   const parish = { ...fallback.parish, ...data.parish }
   parish.whatsapp = whatsappLink(parish)
   if (!parish.worshipPlaces?.length) parish.worshipPlaces = fallback.parish.worshipPlaces
@@ -119,10 +121,10 @@ function enrich(data) {
       target.setDate(now.getDate() + daysUntilSunday)
       const first = schedules.sunday?.[0]
       return {
-        label: daysUntilSunday === 0 ? 'Aujourd’hui' : 'Prochain dimanche',
-        time: first?.time || 'À préciser',
+        label: daysUntilSunday === 0 ? t('Aujourd’hui') : t('Prochain dimanche'),
+        time: first?.time || t('À préciser'),
         note: first ? massPlaces(first) : '',
-        date: target.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }),
+        date: target.toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }),
       }
     },
   }
@@ -133,7 +135,7 @@ export function SiteProvider({ children }) {
   const [status, setStatus] = useState(raw ? 'cached' : 'loading')
 
   const reload = useCallback(() => {
-    return api('/site/', { auth: false })
+    return api(`/site/?lang=${getLang()}`, { auth: false })
       .then((data) => {
         setRaw(data)
         writeCache(data)

@@ -1,3 +1,5 @@
+import { locale, t } from '../i18n/index.jsx'
+
 // Calculs de dates de l'agenda, toujours relatifs au jour du visiteur.
 
 export function isoDay(date = new Date()) {
@@ -30,10 +32,10 @@ export function groupUpcoming(events, today = isoDay()) {
   const week = endOfWeek(today)
   const month = endOfMonth(today)
   const groups = [
-    { id: 'today', label: 'Aujourd’hui et en cours', items: [] },
-    { id: 'week', label: 'Cette semaine', items: [] },
-    { id: 'month', label: 'Plus tard ce mois-ci', items: [] },
-    { id: 'later', label: 'Prochainement', items: [] },
+    { id: 'today', label: t('Aujourd’hui et en cours'), items: [] },
+    { id: 'week', label: t('Cette semaine'), items: [] },
+    { id: 'month', label: t('Plus tard ce mois-ci'), items: [] },
+    { id: 'later', label: t('Prochainement'), items: [] },
   ]
   for (const event of events) {
     if ((event.dateEnd || event.date) < today) continue
@@ -47,11 +49,11 @@ export function groupUpcoming(events, today = isoDay()) {
 
 /** « Aujourd'hui », « Demain », « Samedi 28 novembre »… */
 export function relativeDay(iso, today = isoDay()) {
-  if (iso === today) return 'Aujourd’hui'
-  if (iso === addDays(today, 1)) return 'Demain'
+  if (iso === today) return t('Aujourd’hui')
+  if (iso === addDays(today, 1)) return t('Demain')
   const date = new Date(`${iso}T12:00:00`)
   const sameYear = iso.slice(0, 4) === today.slice(0, 4)
-  return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', ...(sameYear ? {} : { year: 'numeric' }) })
+  return date.toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long', ...(sameYear ? {} : { year: 'numeric' }) })
 }
 
 export function daysUntil(iso, today = isoDay()) {

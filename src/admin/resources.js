@@ -8,9 +8,28 @@ const f = (name, label, type = 'text', extra = {}) => ({ name, label, type, ...e
 const order = f('order', 'Ordre d’affichage', 'number', { help: 'Les plus petits nombres s’affichent en premier.' })
 
 export const RESOURCES = [
+  {
+    key: 'history',
+    group: 'La paroisse',
+    label: 'Histoire de la paroisse',
+    endpoint: '/history/',
+    role: 'pretre',
+    translate: ['period', 'title', 'text'],
+    columns: ['order', 'period', 'title'],
+    intro:
+      'Les grandes étapes affichées sur la page « La paroisse », dans l’ordre indiqué. Un paragraphe = un retour à la ligne vide entre deux blocs de texte.',
+    fields: [
+      f('period', 'Période', 'text', { help: 'Ex. : Dès 1940, Depuis 1988' }),
+      f('title', 'Titre', 'text', { required: true }),
+      f('text', 'Texte', 'textarea', { required: true, rows: 14 }),
+      f('image', 'Image (facultative)', 'image'),
+      order,
+    ],
+  },
   // --- Paroisse ---
   {
     key: 'munera',
+    translate: ['title', 'items'],
     group: 'La paroisse',
     label: 'Programme pastoral',
     endpoint: '/munera/',
@@ -20,6 +39,7 @@ export const RESOURCES = [
   },
   {
     key: 'projects',
+    translate: ['title', 'text'],
     group: 'La paroisse',
     label: 'Projets et travaux',
     endpoint: '/projects/',
@@ -29,6 +49,7 @@ export const RESOURCES = [
   },
   {
     key: 'donation-accounts',
+    translate: ['label', 'details'],
     group: 'La paroisse',
     label: 'Comptes pour les dons',
     endpoint: '/donation-accounts/',
@@ -60,6 +81,7 @@ export const RESOURCES = [
   // --- Prêtres et horaires ---
   {
     key: 'priests',
+    translate: ['role', 'chaplaincy', 'bio'],
     group: 'Prêtres et horaires',
     label: 'Prêtres',
     endpoint: '/priests/',
@@ -81,6 +103,7 @@ export const RESOURCES = [
   },
   {
     key: 'mass-times',
+    translate: ['weekdays', 'note'],
     group: 'Prêtres et horaires',
     label: 'Horaires des messes',
     endpoint: '/mass-times/',
@@ -98,6 +121,7 @@ export const RESOURCES = [
   },
   {
     key: 'appointments',
+    translate: ['title', 'days', 'hours', 'place', 'extra'],
     group: 'Prêtres et horaires',
     label: 'Confessions, enseignement, adoration',
     endpoint: '/appointments/',
@@ -116,6 +140,7 @@ export const RESOURCES = [
   },
   {
     key: 'sacraments',
+    translate: ['title', 'action', 'conditions', 'documents', 'preparation', 'calendar', 'contact'],
     group: 'Prêtres et horaires',
     label: 'Sacrements et démarches',
     endpoint: '/sacraments/',
@@ -136,6 +161,7 @@ export const RESOURCES = [
   // --- Secteurs ---
   {
     key: 'sectors',
+    translate: ['blurb'],
     group: 'Secteurs et CEV',
     label: 'Secteurs',
     endpoint: '/sectors/',
@@ -152,6 +178,7 @@ export const RESOURCES = [
   },
   {
     key: 'cevs',
+    translate: ['zone', 'meeting'],
     group: 'Secteurs et CEV',
     label: 'CEV',
     endpoint: '/cevs/',
@@ -170,6 +197,7 @@ export const RESOURCES = [
   },
   {
     key: 'descents',
+    translate: ['period', 'activity'],
     group: 'Secteurs et CEV',
     label: 'Programme des descentes',
     endpoint: '/descents/',
@@ -186,6 +214,7 @@ export const RESOURCES = [
   // --- Mouvements ---
   {
     key: 'platforms',
+    translate: ['name', 'subtitle'],
     group: 'Mouvements et services',
     label: 'Plateformes',
     endpoint: '/platforms/',
@@ -195,6 +224,7 @@ export const RESOURCES = [
   },
   {
     key: 'associations',
+    translate: ['summary', 'description', 'charism', 'mission', 'history', 'meeting'],
     group: 'Mouvements et services',
     label: 'Associations',
     endpoint: '/associations/',
@@ -223,6 +253,7 @@ export const RESOURCES = [
   },
   {
     key: 'choirs',
+    translate: ['masses'],
     group: 'Mouvements et services',
     label: 'Chorales',
     endpoint: '/choirs/',
@@ -232,6 +263,7 @@ export const RESOURCES = [
   },
   {
     key: 'councils',
+    translate: ['name', 'role'],
     group: 'Mouvements et services',
     label: 'Conseils',
     endpoint: '/councils/',
@@ -241,6 +273,7 @@ export const RESOURCES = [
   },
   {
     key: 'commissions',
+    translate: ['name', 'note'],
     group: 'Mouvements et services',
     label: 'Commissions',
     endpoint: '/commissions/',
@@ -257,6 +290,7 @@ export const RESOURCES = [
   // --- Publications ---
   {
     key: 'news',
+    translate: ['title', 'category', 'text'],
     group: 'Publications',
     label: 'Annonces',
     endpoint: '/news/',
@@ -276,6 +310,7 @@ export const RESOURCES = [
   },
   {
     key: 'events',
+    translate: ['title', 'time', 'place', 'audience', 'description'],
     group: 'Publications',
     label: 'Agenda',
     endpoint: '/events/',
@@ -307,6 +342,7 @@ export const RESOURCES = [
   },
   {
     key: 'homilies',
+    translate: ['title', 'excerpt', 'text'],
     group: 'Publications',
     label: 'Homélies et enseignements',
     endpoint: '/homilies/',
@@ -330,6 +366,7 @@ export const RESOURCES = [
   },
   {
     key: 'photos',
+    translate: ['caption', 'alt', 'category'],
     group: 'Publications',
     label: 'Galerie photos',
     endpoint: '/photos/',
@@ -348,6 +385,7 @@ export const RESOURCES = [
   },
   {
     key: 'downloads',
+    translate: ['title', 'type_label'],
     group: 'Publications',
     label: 'Documents',
     endpoint: '/downloads/',
@@ -364,6 +402,7 @@ export const RESOURCES = [
   // --- Foi ---
   {
     key: 'prayers',
+    translate: ['title', 'body'],
     group: 'Foi et prière',
     label: 'Prières',
     endpoint: '/prayers/',
@@ -373,6 +412,7 @@ export const RESOURCES = [
   },
   {
     key: 'faith-questions',
+    translate: ['question', 'answer'],
     group: 'Foi et prière',
     label: 'Questions sur la foi',
     endpoint: '/faith-questions/',

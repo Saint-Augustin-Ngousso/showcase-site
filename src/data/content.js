@@ -1,3 +1,5 @@
+import { locale } from '../i18n/index.jsx'
+
 export const parish = {
   name: 'Paroisse Saint Augustin',
   fullName: 'Paroisse Saint Augustin de Ngousso',
@@ -578,7 +580,7 @@ export const searchIndex = [
 
 export function formatDate(iso) {
   if (!iso) return ''
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('fr-FR', {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString(locale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -588,7 +590,7 @@ export function formatDate(iso) {
 
 export function formatDateShort(iso) {
   if (!iso) return ''
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('fr-FR', {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString(locale(), {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

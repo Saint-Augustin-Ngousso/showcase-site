@@ -2,6 +2,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { useSite } from '../data/SiteContext.jsx'
 import { PhotoGallery, Placeholder } from '../components/Media.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 export function findAssociation(site, slug) {
   for (const platform of site.associationPlatforms) {
@@ -29,10 +30,10 @@ export default function AssociationDetail() {
 
   const photos = (a.media || []).filter((m) => m.kind === 'image')
   const facts = [
-    ['Saint patron', a.patronSaint],
-    ['Réunion', a.meeting],
-    ['Responsable', a.leader],
-    ['Aumônier', a.chaplain],
+    [t('Saint patron'), a.patronSaint],
+    [t('Réunion'), a.meeting],
+    [t('Responsable'), a.leader],
+    [t('Aumônier'), a.chaplain],
   ].filter(([, v]) => v)
   const hasText = a.description || a.charism || a.mission || a.history
   const siblings = (platform.associations || []).filter((x) => x.slug !== a.slug)
@@ -40,7 +41,7 @@ export default function AssociationDetail() {
   return (
     <>
       <PageHero kicker={platform.name} title={a.name}>
-        {a.summary || (a.patronSaint ? `Sous le patronage de ${a.patronSaint}.` : '')}
+        {a.summary || (a.patronSaint ? t('Sous le patronage de {saint}.', { saint: a.patronSaint }) : '')}
       </PageHero>
 
       <Section>
@@ -49,19 +50,19 @@ export default function AssociationDetail() {
             {a.photo ? <img src={a.photo} alt={a.name} className="max-h-[28rem] w-full object-cover" /> : null}
             {hasText ? (
               <>
-                <Block title="Présentation">{a.description}</Block>
-                <Block title="Charisme">{a.charism}</Block>
-                <Block title="Missions">{a.mission}</Block>
-                <Block title="Histoire du groupe">{a.history}</Block>
+                <Block title={t("Présentation")}>{a.description}</Block>
+                <Block title={t("Charisme")}>{a.charism}</Block>
+                <Block title={t("Missions")}>{a.mission}</Block>
+                <Block title={t("Histoire du groupe")}>{a.history}</Block>
               </>
             ) : (
-              <ComingSoon>La fiche complète de ce groupe — histoire, missions, saint patron — sera publiée ici.</ComingSoon>
+              <ComingSoon>{t("La fiche complète de ce groupe — histoire, missions, saint patron — sera publiée ici.")}</ComingSoon>
             )}
           </div>
           <aside className="grid content-start gap-4">
             {!a.photo ? <Placeholder label={a.name} className="h-48 w-full" /> : null}
             <Card>
-              <p className="text-xs tracking-[0.2em] text-wine uppercase">En bref</p>
+              <p className="text-xs tracking-[0.2em] text-wine uppercase">{t("En bref")}</p>
               {facts.length ? (
                 <dl className="mt-3 space-y-2 text-sm">
                   {facts.map(([label, value]) => (
@@ -72,11 +73,11 @@ export default function AssociationDetail() {
                   ))}
                 </dl>
               ) : (
-                <p className="mt-3 text-sm text-muted">Jour de réunion et responsable à préciser.</p>
+                <p className="mt-3 text-sm text-muted">{t("Jour de réunion et responsable à préciser.")}</p>
               )}
-              {a.isYouth ? <p className="mt-3 text-xs tracking-wide text-wine uppercase">Groupe de jeunes</p> : null}
+              {a.isYouth ? <p className="mt-3 text-xs tracking-wide text-wine uppercase">{t("Groupe de jeunes")}</p> : null}
               <div className="mt-5">
-                <CtaLink to="/mouvements#servir">Rejoindre ce groupe</CtaLink>
+                <CtaLink to="/mouvements#servir">{t("Rejoindre ce groupe")}</CtaLink>
               </div>
             </Card>
           </aside>
@@ -84,13 +85,13 @@ export default function AssociationDetail() {
       </Section>
 
       {photos.length ? (
-        <Section tone="stone" title="En images">
+        <Section tone="stone" title={t("En images")}>
           <PhotoGallery items={photos} />
         </Section>
       ) : null}
 
       {siblings.length ? (
-        <Section title={`Aussi dans la ${platform.name.toLowerCase()}`}>
+        <Section title={t('Aussi dans : {name}', { name: platform.name })}>
           <div className="flex flex-wrap gap-2">
             {siblings.map((x) => (
               <Link key={x.slug} to={`/mouvements/${x.slug}`} className="border border-wine/30 px-3 py-1.5 text-sm text-wine hover:bg-wine hover:text-cream">
@@ -99,7 +100,7 @@ export default function AssociationDetail() {
             ))}
           </div>
           <p className="mt-8">
-            <CtaLink to="/mouvements">Tous les mouvements</CtaLink>
+            <CtaLink to="/mouvements">{t("Tous les mouvements")}</CtaLink>
           </p>
         </Section>
       ) : null}

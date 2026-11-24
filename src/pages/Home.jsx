@@ -3,6 +3,7 @@ import { massPlaces, useSite } from '../data/SiteContext.jsx'
 import { groupUpcoming, isoDay, relativeDay } from '../data/dates.js'
 import EventList from '../components/EventList.jsx'
 import { Card, CtaLink, PhotoGrid, Section } from '../components/Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 /** Garde les premiers événements de chaque groupe, `max` au total. */
 function firstEvents(groups, max) {
@@ -44,12 +45,12 @@ export default function Home() {
           <p className="mt-4 max-w-xl text-sm text-gold-light">{parish.yearLabel}</p>
           <h1 className="font-serif mt-3 max-w-3xl text-4xl leading-[1.08] sm:text-5xl md:text-6xl">{parish.slogan}</h1>
           <p className="mt-4 max-w-xl text-base text-cream/85 sm:text-lg">
-            {parish.themeParish}.{parish.themeDiocesan ? ` Thème diocésain : « ${parish.themeDiocesan} ».` : ''}
+            {parish.themeParish}.{parish.themeDiocesan ? ` ${t('Thème diocésain : « {theme} ».', { theme: parish.themeDiocesan })}` : ''}
           </p>
           <div className="mt-8 grid gap-3 sm:max-w-xl sm:grid-cols-2">
-            <CtaLink to="/messes">Horaires des messes</CtaLink>
+            <CtaLink to="/messes">{t("Horaires des messes")}</CtaLink>
             <CtaLink to="/paroisse" invert>
-              Le programme pastoral
+              {t("Le programme pastoral")}
             </CtaLink>
           </div>
         </div>
@@ -60,7 +61,7 @@ export default function Home() {
           <div className="mx-auto max-w-6xl space-y-1">
             {pinned.map((item) => (
               <p key={item.slug} className="text-sm">
-                <span className="mr-2 text-xs tracking-[0.2em] text-wine uppercase">Annonce</span>
+                <span className="mr-2 text-xs tracking-[0.2em] text-wine uppercase">{t("Annonce")}</span>
                 <Link to="/agenda" className="font-medium text-wine-dark hover:underline">
                   {item.title}
                 </Link>
@@ -73,66 +74,66 @@ export default function Home() {
       <Section>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card>
-            <p className="text-xs tracking-[0.2em] text-wine uppercase">Prochaine messe</p>
+            <p className="text-xs tracking-[0.2em] text-wine uppercase">{t("Prochaine messe")}</p>
             <p className="font-serif mt-2 text-2xl">{nextMass.time}</p>
             <p className="mt-1 text-sm text-muted">
               {nextMass.label} · {nextMass.note}
             </p>
             <div className="mt-4">
-              <CtaLink to="/messes">Tous les horaires</CtaLink>
+              <CtaLink to="/messes">{t("Tous les horaires")}</CtaLink>
             </div>
           </Card>
           <Card>
-            <p className="text-xs tracking-[0.2em] text-wine uppercase">Prochain événement</p>
+            <p className="text-xs tracking-[0.2em] text-wine uppercase">{t("Prochain événement")}</p>
             {nextEvent ? (
               <>
                 <p className="font-serif mt-2 text-2xl leading-tight">{nextEvent.title}</p>
                 <p className="mt-1 text-sm text-muted first-letter:uppercase">
-                  {nextEvent.date <= today ? 'En cours' : relativeDay(nextEvent.date, today)}
+                  {nextEvent.date <= today ? t('En cours') : relativeDay(nextEvent.date, today)}
                   {nextEvent.audience ? ` · ${nextEvent.audience}` : ''}
                 </p>
               </>
             ) : (
-              <p className="mt-2 text-sm text-muted">Consultez l’agenda paroissial.</p>
+              <p className="mt-2 text-sm text-muted">{t("Consultez l’agenda paroissial.")}</p>
             )}
             <div className="mt-4">
-              <CtaLink to="/agenda">Agenda</CtaLink>
+              <CtaLink to="/agenda">{t("Agenda")}</CtaLink>
             </div>
           </Card>
           <Card>
-            <p className="text-xs tracking-[0.2em] text-wine uppercase">Confessions</p>
+            <p className="text-xs tracking-[0.2em] text-wine uppercase">{t("Confessions")}</p>
             <p className="font-serif mt-2 text-2xl">{schedules.confessions.hours || 'À préciser'}</p>
             <p className="mt-1 text-sm text-muted">
-              {schedules.confessions.days ? `Chaque ${schedules.confessions.days.toLowerCase()}` : ''}
+              {schedules.confessions.days ? t('Chaque {day}', { day: schedules.confessions.days.toLowerCase() }) : ''}
               {schedules.confessions.place ? `, ${schedules.confessions.place.toLowerCase()}` : ''}.
             </p>
             <div className="mt-4">
-              <CtaLink to="/messes#confessions">Voir le détail</CtaLink>
+              <CtaLink to="/messes#confessions">{t("Voir le détail")}</CtaLink>
             </div>
           </Card>
           <Card>
-            <p className="text-xs tracking-[0.2em] text-wine uppercase">Nous trouver</p>
+            <p className="text-xs tracking-[0.2em] text-wine uppercase">{t("Nous trouver")}</p>
             <p className="font-serif mt-2 text-2xl">{parish.place}</p>
             <p className="mt-1 text-sm text-muted">{parish.worshipPlaces.join(' · ')}</p>
             <div className="mt-4">
-              <CtaLink to="/contact">Carte et contact</CtaLink>
+              <CtaLink to="/contact">{t("Carte et contact")}</CtaLink>
             </div>
           </Card>
         </div>
       </Section>
 
       {soon.length ? (
-        <Section tone="stone" eyebrow="Agenda" title="Les prochains jours">
+        <Section tone="stone" eyebrow={t("Agenda")} title={t("Les prochains jours")}>
           <EventList groups={soon} />
           <div className="mt-6">
-            <CtaLink to="/agenda">Tout l’agenda</CtaLink>
+            <CtaLink to="/agenda">{t("Tout l’agenda")}</CtaLink>
           </div>
         </Section>
       ) : null}
 
-      <Section eyebrow="Dimanche" title="Horaires des messes">
+      <Section eyebrow={t("Dimanche")} title={t("Horaires des messes")}>
         <p className="mb-6 max-w-2xl text-muted">
-          Deux lieux de culte : la chapelle et la petite église. Sur le site public, les heures et les lieux suffisent.
+          {t("Deux lieux de culte : la chapelle et la petite église. Sur le site public, les heures et les lieux suffisent.")}
         </p>
         <ul className="divide-y divide-gold/20 border border-gold/30 bg-white">
           {schedules.sunday.map((item) => (
@@ -145,27 +146,26 @@ export default function Home() {
       </Section>
 
       {gallery.length ? (
-        <Section tone="stone" eyebrow="En images" title="La vie de la communauté">
+        <Section tone="stone" eyebrow={t("En images")} title={t("La vie de la communauté")}>
           <PhotoGrid photos={gallery.slice(0, 3)} />
           <div className="mt-6">
-            <CtaLink to="/mediatheque">Voir la galerie</CtaLink>
+            <CtaLink to="/mediatheque">{t("Voir la galerie")}</CtaLink>
           </div>
         </Section>
       ) : null}
 
-      <Section eyebrow="Mot du curé" title={cure ? `${cure.title} ${cure.name}` : 'Mot du curé'}>
+      <Section eyebrow={t("Mot du curé")} title={cure ? `${cure.title} ${cure.name}` : 'Mot du curé'}>
         <Card>
           {parish.cureWord ? (
             <div className="space-y-3 whitespace-pre-line text-muted">{parish.cureWord}</div>
           ) : (
             <p className="text-muted">
-              Le mot d’accueil de Mgr le curé sera publié ici. Toute la paroisse est invitée à vivre l’année pastorale
-              sous le thème « {parish.themeParish} ».
+              {t('Le mot d’accueil de Mgr le curé sera publié ici. Toute la paroisse est invitée à vivre l’année pastorale sous le thème « {theme} ».', { theme: parish.themeParish })}
             </p>
           )}
           <p className="font-serif mt-6 text-2xl text-wine">{parish.slogan}</p>
           <div className="mt-6">
-            <CtaLink to="/pretres">Rencontrer nos prêtres</CtaLink>
+            <CtaLink to="/pretres">{t("Rencontrer nos prêtres")}</CtaLink>
           </div>
         </Card>
       </Section>

@@ -6,6 +6,7 @@ import { api } from '../lib/api.js'
 import { COLUMN_LABELS, RESOURCE_BY_KEY } from './resources.js'
 import { FieldRow, buildBody, emptyForm } from './fields.jsx'
 import Attachments from './Attachments.jsx'
+import Translations, { cleanI18n } from './Translations.jsx'
 
 export const STATUS = {
   draft: { label: 'Brouillon', className: 'bg-stone text-muted' },
@@ -108,6 +109,7 @@ export default function ResourceManager() {
 
   function startCreate() {
     const initial = emptyForm(resource.fields)
+    if (resource.translate) initial.i18n = { en: {} }
     if (resource.filterBy && fkFilter) initial[resource.filterBy] = Number(fkFilter)
     setForm(initial)
     setEditing('new')
@@ -117,6 +119,7 @@ export default function ResourceManager() {
   function startEdit(row) {
     const values = {}
     for (const fld of resource.fields) values[fld.name] = row[fld.name] ?? emptyForm([fld])[fld.name]
+    if (resource.translate) values.i18n = row.i18n || { en: {} }
     setForm(values)
     setEditing(row)
     setNotice('')
@@ -135,6 +138,11 @@ export default function ResourceManager() {
     try {
       const initial = editing === 'new' ? {} : editing
       const body = buildBody(resource.fields, form, initial)
+      if (resource.translate) {
+        const i18n = cleanI18n(form.i18n)
+        if (body instanceof FormData) body.append('i18n', JSON.stringify(i18n))
+        else body.i18n = i18n
+      }
       if (resource.publishable && wantedStatus) {
         if (body instanceof FormData) body.append('status', wantedStatus)
         else body.status = wantedStatus
@@ -229,6 +237,14 @@ export default function ResourceManager() {
           {resource.fields.map((fld) => (
             <FieldRow key={fld.name} field={fld} value={form[fld.name]} onChange={(value) => setForm((cur) => ({ ...cur, [fld.name]: value }))} />
           ))}
+          {resource.translate ? (
+            <Translations
+              fields={resource.fields}
+              names={resource.translate}
+              value={form.i18n}
+              onChange={(i18n) => setForm((cur) => ({ ...cur, i18n }))}
+            />
+          ) : null}
           {resource.attachments && editing === 'new' ? (
             <p className="text-sm text-muted">Enregistrez d’abord : vous pourrez ensuite ajouter {resource.attachments.title.toLowerCase()}.</p>
           ) : null}

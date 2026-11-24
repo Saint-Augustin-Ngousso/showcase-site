@@ -5,6 +5,7 @@ import PastoralForm from '../components/PastoralForm.jsx'
 import { Placeholder } from '../components/Media.jsx'
 import { homilyKind } from './EnseignementDetail.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 
 export default function Foi() {
@@ -13,11 +14,11 @@ export default function Foi() {
 
   return (
     <>
-      <PageHero kicker="Grandir dans la foi" title="Enseignements">
-        Homélies et enseignement du mercredi, pour prolonger ce qui est annoncé à la messe.
+      <PageHero kicker={t("Grandir dans la foi")} title={t("Enseignements")}>
+        {t("Homélies et enseignement du mercredi, pour prolonger ce qui est annoncé à la messe.")}
       </PageHero>
 
-      <Section eyebrow="Prier" title="Des prières pour commencer">
+      <Section eyebrow={t("Prier")} title={t("Des prières pour commencer")}>
         <div className="grid gap-4 md:grid-cols-2">
           {prayers.map((item) => (
             <Card key={item.title}>
@@ -27,20 +28,20 @@ export default function Foi() {
           ))}
         </div>
         <div className="mt-6">
-          <CtaLink to="/priere">Confier une intention de prière</CtaLink>
+          <CtaLink to="/priere">{t("Confier une intention de prière")}</CtaLink>
         </div>
       </Section>
 
-      <Section tone="stone" title="Lire la Parole de Dieu">
+      <Section tone="stone" title={t("Lire la Parole de Dieu")}>
         <Card>
-          <p className="text-muted">Évangile du jour et textes de la messe, via le missel officiel.</p>
+          <p className="text-muted">{t("Évangile du jour et textes de la messe, via le missel officiel.")}</p>
           <div className="mt-6">
-            <CtaLink href="https://www.aelf.org/">Évangile du jour (AELF)</CtaLink>
+            <CtaLink href="https://www.aelf.org/">{t("Évangile du jour (AELF)")}</CtaLink>
           </div>
         </Card>
       </Section>
 
-      <Section id="homelies" title="Homélies et enseignements">
+      <Section id="homelies" title={t("Homélies et enseignements")}>
         {published.length ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {published.map((item) => {
@@ -65,7 +66,7 @@ export default function Foi() {
                     {item.date ? <span className="mt-1 text-sm text-muted">{formatDateShort(item.date)}</span> : null}
                     {item.excerpt ? <span className="mt-3 line-clamp-3 text-sm text-muted">{item.excerpt}</span> : null}
                     <span className="mt-auto flex items-center justify-between pt-4 text-xs tracking-wide text-wine uppercase">
-                      <span className="group-hover:underline">Lire et écouter →</span>
+                      <span className="group-hover:underline">{t("Lire et écouter →")}</span>
                       {mediaCount ? <span className="text-muted normal-case">{mediaCount} média{mediaCount > 1 ? 's' : ''}</span> : null}
                     </span>
                   </span>
@@ -74,11 +75,11 @@ export default function Foi() {
             })}
           </div>
         ) : (
-          <ComingSoon>Les textes et, le cas échéant, l’audio seront déposés par les prêtres après relecture.</ComingSoon>
+          <ComingSoon>{t("Les textes et, le cas échéant, l’audio seront déposés par les prêtres après relecture.")}</ComingSoon>
         )}
       </Section>
 
-      <Section id="foi-catholique" title="Comprendre la foi catholique">
+      <Section id="foi-catholique" title={t("Comprendre la foi catholique")}>
         <div className="grid gap-4 md:grid-cols-2">
           {faithQuestions.map((item) => (
             <Card key={item.q}>
@@ -88,16 +89,15 @@ export default function Foi() {
           ))}
         </div>
         <div className="mx-auto mt-10 max-w-2xl">
-          <h3 className="font-serif text-2xl">Poser une question</h3>
+          <h3 className="font-serif text-2xl">{t("Poser une question")}</h3>
           <p className="mt-2 mb-4 text-sm text-muted">
-            La question n’est pas affichée tout de suite. Quand un prêtre y aura répondu, question et réponse apparaîtront
-            ici.
+            {t("La question n’est pas affichée tout de suite. Quand un prêtre y aura répondu, question et réponse apparaîtront ici.")}
           </p>
           <PastoralForm
             endpoint="/faith-questions/ask/"
-            submitLabel="Poser la question"
-            successTitle="Question enregistrée"
-            successText="Elle apparaîtra ici avec sa réponse, après relecture d’un prêtre."
+            submitLabel={t("Poser la question")}
+            successTitle={t("Question enregistrée")}
+            successText={t("Elle apparaîtra ici avec sa réponse, après relecture d’un prêtre.")}
             sensitiveNotice={false}
             toPayload={(f) => ({ prenom: f.prenom, question: f.question })}
             fields={[
@@ -108,7 +108,7 @@ export default function Foi() {
         </div>
       </Section>
 
-      <Section tone="stone" title="Dieu agit">
+      <Section tone="stone" title={t("Dieu agit")}>
         {testimonials.length ? (
           <div className="grid gap-4 md:grid-cols-3">
             {testimonials.map((item) => (
@@ -120,18 +120,18 @@ export default function Foi() {
             ))}
           </div>
         ) : (
-          <ComingSoon>Les premiers témoignages validés par l’équipe pastorale seront publiés ici.</ComingSoon>
+          <ComingSoon>{t("Les premiers témoignages validés par l’équipe pastorale seront publiés ici.")}</ComingSoon>
         )}
         <div className="mx-auto mt-10 max-w-2xl">
-          <h3 className="font-serif text-2xl">Partager un témoignage</h3>
+          <h3 className="font-serif text-2xl">{t("Partager un témoignage")}</h3>
           <p className="mt-2 mb-4 text-sm text-muted">
-            Comment la foi transforme une vie concrète. Un prêtre relit chaque témoignage avant publication.
+            {t("Comment la foi transforme une vie concrète. Un prêtre relit chaque témoignage avant publication.")}
           </p>
           <PastoralForm
             endpoint="/testimonials/"
-            submitLabel="Envoyer le témoignage"
-            successTitle="Merci pour ce témoignage"
-            successText="Il sera publié ici après relecture d’un prêtre."
+            submitLabel={t("Envoyer le témoignage")}
+            successTitle={t("Merci pour ce témoignage")}
+            successText={t("Il sera publié ici après relecture d’un prêtre.")}
             sensitiveNotice={false}
             toPayload={(f) => ({ author_name: f.prenom, title: f.title, text: f.temoignage })}
             fields={[

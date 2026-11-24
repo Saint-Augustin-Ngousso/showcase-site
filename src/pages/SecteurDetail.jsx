@@ -2,6 +2,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import { useSite } from '../data/SiteContext.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
 import { SectorNav } from './Secteurs.jsx'
+import { t } from '../i18n/index.jsx'
 
 export default function SecteurDetail() {
   const { secteur } = useParams()
@@ -13,12 +14,12 @@ export default function SecteurDetail() {
 
   return (
     <>
-      <PageHero kicker={`Secteur ${sector.saint}`} title={`Communautés du secteur ${sector.saint}`}>
-        Aumônier : {sector.chaplain}
-        {sector.layLeaders ? `. Responsables laïcs : ${sector.layLeaders}.` : '.'}
+      <PageHero kicker={t('Secteur {name}', { name: sector.saint })} title={t('Communautés du secteur {name}', { name: sector.saint })}>
+        {t('Aumônier :')} {sector.chaplain}
+        {sector.layLeaders ? `. ${t('Responsables laïcs : {names}', { names: sector.layLeaders })}.` : '.'}
       </PageHero>
 
-      <Section title="Les CEV">
+      <Section title={t("Les CEV")}>
         <SectorNav />
         {sector.cevs.length ? (
           <>
@@ -30,31 +31,29 @@ export default function SecteurDetail() {
                   <p className="mt-3 text-sm text-muted">{cev.lead}</p>
                   {cev.zone ? (
                     <p className="mt-2 whitespace-pre-line text-sm">
-                      <span className="text-xs tracking-[0.15em] text-wine uppercase">Zone · </span>
+                      <span className="text-xs tracking-[0.15em] text-wine uppercase">{t("Zone ·")} </span>
                       {cev.zone}
                     </p>
                   ) : null}
-                  {cev.meeting ? <p className="mt-2 text-sm">Réunion : {cev.meeting}</p> : null}
-                  {cev.contact ? <p className="mt-1 text-sm text-muted">Contact : {cev.contact}</p> : null}
+                  {cev.meeting ? <p className="mt-2 text-sm">{t('Réunion :')} {cev.meeting}</p> : null}
+                  {cev.contact ? <p className="mt-1 text-sm text-muted">{t('Contact :')} {cev.contact}</p> : null}
                 </Card>
               ))}
             </div>
             {missingMeetings ? (
               <p className="mt-6 text-sm text-muted">
-                Les jours de réunion seront ajoutés dès qu’ils seront transmis. Les contacts téléphoniques des
-                responsables ne sont publiés qu’avec leur accord.
+                {t("Les jours de réunion seront ajoutés dès qu’ils seront transmis. Les contacts téléphoniques des responsables ne sont publiés qu’avec leur accord.")}
               </p>
             ) : null}
           </>
         ) : (
           <ComingSoon>
-            La liste des CEV de {sector.saint}, avec jours de réunion et responsables, sera publiée sur le modèle du
-            secteur Saint Marc.
+            {t('La liste des CEV de {name}, avec jours de réunion et responsables, sera publiée sur le modèle du secteur Saint Marc.', { name: sector.saint })}
           </ComingSoon>
         )}
       </Section>
 
-      <Section tone="stone" title="Programme des descentes">
+      <Section tone="stone" title={t("Programme des descentes")}>
         {sector.descents.length ? (
           <ul className="divide-y divide-gold/20 border border-gold/30 bg-white">
             {sector.descents.map((item) => (
@@ -65,10 +64,10 @@ export default function SecteurDetail() {
             ))}
           </ul>
         ) : (
-          <ComingSoon>Le programme des descentes de {sector.saint} sera publié ici, sur le modèle du secteur Saint Marc.</ComingSoon>
+          <ComingSoon>{t('Le programme des descentes de {name} sera publié ici, sur le modèle du secteur Saint Marc.', { name: sector.saint })}</ComingSoon>
         )}
         <p className="mt-8">
-          <CtaLink to="/secteurs">Retour aux trois secteurs</CtaLink>
+          <CtaLink to="/secteurs">{t("Retour aux trois secteurs")}</CtaLink>
         </p>
       </Section>
     </>

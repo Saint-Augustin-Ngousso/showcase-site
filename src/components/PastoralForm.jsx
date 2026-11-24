@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.jsx'
 import { useSite } from '../data/SiteContext.jsx'
 import { api } from '../lib/api.js'
 import { Card } from './Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 /**
  * Formulaire public envoyé au backend.
@@ -48,10 +49,10 @@ export default function PastoralForm({
         sent: false,
         error:
           error.status === 429
-            ? 'Trop d’envois depuis cette connexion. Réessayez dans un moment.'
+            ? t('Trop d’envois depuis cette connexion. Réessayez dans un moment.')
             : error.status
               ? error.message
-              : 'Le serveur de la paroisse est injoignable. Vérifiez votre connexion et réessayez.',
+              : t('Le serveur de la paroisse est injoignable. Vérifiez votre connexion et réessayez.'),
       })
     }
   }
@@ -63,7 +64,7 @@ export default function PastoralForm({
       <Card className="bg-wine text-cream">
         <h3 className="font-serif text-2xl">{successTitle}</h3>
         <p className="mt-3 text-cream/80">
-          {successText || 'Votre demande est bien arrivée à l’équipe pastorale. Le secrétariat vous recontactera.'}
+          {successText || t('Votre demande est bien arrivée à l’équipe pastorale. Le secrétariat vous recontactera.')}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <button
@@ -74,15 +75,15 @@ export default function PastoralForm({
               setState({ sending: false, sent: false, error: '' })
             }}
           >
-            Nouvel envoi
+            {t("Nouvel envoi")}
           </button>
           {whatsapp ? (
             <a href={whatsapp} className="inline-flex border border-cream px-4 py-2 text-sm uppercase">
-              Continuer sur WhatsApp
+              {t("Continuer sur WhatsApp")}
             </a>
           ) : (
             <NavLink to="/contact" className="inline-flex border border-cream px-4 py-2 text-sm uppercase">
-              Voir le contact
+              {t("Voir le contact")}
             </NavLink>
           )}
         </div>
@@ -115,13 +116,13 @@ export default function PastoralForm({
               className="mt-1 h-4 w-4 accent-wine"
             />
             <span>
-              {field.label}
-              {field.help ? <span className="mt-0.5 block text-xs text-muted">{field.help}</span> : null}
+              {t(field.label)}
+              {field.help ? <span className="mt-0.5 block text-xs text-muted">{t(field.help)}</span> : null}
             </span>
           </label>
         ) : (
           <label key={field.name} className="grid gap-1 text-sm">
-            {field.label}
+            {t(field.label)}
             {field.type === 'textarea' ? (
               <textarea
                 required={field.required}
@@ -138,10 +139,10 @@ export default function PastoralForm({
                 onChange={(e) => update(field.name, e.target.value)}
                 className="border border-stone bg-cream px-3 py-2"
               >
-                <option value="">Choisir</option>
+                <option value="">{t("Choisir")}</option>
                 {field.options.map((option) => {
                   const value = typeof option === 'string' ? option : option.value
-                  const label = typeof option === 'string' ? option : option.label
+                  const label = t(typeof option === 'string' ? option : option.label)
                   return (
                     <option key={value} value={value}>
                       {label}
@@ -165,7 +166,7 @@ export default function PastoralForm({
       {notice ? <p className="text-xs text-muted">{notice}</p> : null}
       {sensitiveNotice ? (
         <p className="text-xs text-muted">
-          Les informations sensibles ne sont jamais publiées. Elles restent réservées à l’équipe pastorale.
+          {t("Les informations sensibles ne sont jamais publiées. Elles restent réservées à l’équipe pastorale.")}
         </p>
       ) : null}
       {state.error ? <p className="border border-wine/40 bg-wine/5 px-3 py-2 text-sm text-wine">{state.error}</p> : null}
@@ -174,7 +175,7 @@ export default function PastoralForm({
         disabled={state.sending}
         className="bg-wine px-5 py-3 text-sm tracking-wide text-cream uppercase disabled:opacity-60"
       >
-        {state.sending ? 'Envoi…' : submitLabel}
+        {state.sending ? t('Envoi…') : submitLabel}
       </button>
     </form>
   )

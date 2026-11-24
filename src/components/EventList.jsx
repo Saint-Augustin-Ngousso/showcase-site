@@ -1,16 +1,19 @@
 import { daysUntil, isOngoing, isoDay, relativeDay } from '../data/dates.js'
 import { formatDateShort } from '../data/content.js'
+import { t } from '../i18n/index.jsx'
 
 function whenLabel(event, today) {
   if (isOngoing(event, today)) {
     if (event.dateEnd && event.dateEnd !== event.date) {
-      return event.dateEnd === today ? 'Dernier jour aujourd’hui' : `En cours jusqu’au ${formatDateShort(event.dateEnd)}`
+      return event.dateEnd === today
+        ? t('Dernier jour aujourd’hui')
+        : t('En cours jusqu’au {date}', { date: formatDateShort(event.dateEnd) })
     }
-    return 'Aujourd’hui'
+    return t('Aujourd’hui')
   }
   const label = relativeDay(event.date, today)
   const n = daysUntil(event.date, today)
-  return n > 1 && n <= 6 ? `${label} · dans ${n} jours` : label
+  return n > 1 && n <= 6 ? `${label} · ${t('dans {n} jours', { n })}` : label
 }
 
 /** Liste d'événements groupés par période (voir groupUpcoming). */

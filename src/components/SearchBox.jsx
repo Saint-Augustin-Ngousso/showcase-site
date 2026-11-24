@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { searchIndex } from '../data/content.js'
+import { t } from '../i18n/index.jsx'
 
 export function searchSite(query) {
   const fold = (value) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -8,7 +9,7 @@ export function searchSite(query) {
   if (!words.length) return []
   return searchIndex
     .map((item) => {
-      const hay = fold([...item.q, item.title, item.text].join(' '))
+      const hay = fold([...item.q, item.title, item.text, t(item.title), t(item.text)].join(' '))
       const score = words.filter((word) => hay.includes(word)).length
       return { ...item, score }
     })
@@ -32,13 +33,13 @@ export default function SearchBox({ compact = false, onDone }) {
     <div className={compact ? 'relative w-full' : 'relative w-full max-w-md'}>
       <form onSubmit={onSubmit}>
         <label className="sr-only" htmlFor="recherche-site">
-          Que cherchez-vous ?
+          {t("Que cherchez-vous ?")}
         </label>
         <input
           id="recherche-site"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Que cherchez-vous ? messe, baptême…"
+          placeholder={t("Que cherchez-vous ? messe, baptême…")}
           className="w-full border border-gold/40 bg-white px-3 py-2 text-sm"
         />
       </form>
@@ -54,8 +55,8 @@ export default function SearchBox({ compact = false, onDone }) {
                   onDone?.()
                 }}
               >
-                <span className="font-medium text-wine">{item.title}</span>
-                <span className="mt-0.5 block text-xs text-muted">{item.text}</span>
+                <span className="font-medium text-wine">{t(item.title)}</span>
+                <span className="mt-0.5 block text-xs text-muted">{t(item.text)}</span>
               </button>
             </li>
           ))}

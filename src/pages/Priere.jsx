@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext.jsx'
 import PastoralForm from '../components/PastoralForm.jsx'
 import { Card, ComingSoon, PageHero, Section } from '../components/Layout.jsx'
 import { api } from '../lib/api.js'
+import { locale, t } from '../i18n/index.jsx'
 
 const CATEGORIES = [
   { value: 'sante', label: 'Santé' },
@@ -17,10 +18,10 @@ const CATEGORIES = [
 
 function timeAgo(iso) {
   const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60000)
-  if (minutes < 60) return minutes <= 1 ? 'à l’instant' : `il y a ${minutes} min`
+  if (minutes < 60) return minutes <= 1 ? t('à l’instant') : t('il y a {n} min', { n: minutes })
   const hours = Math.round(minutes / 60)
-  if (hours < 24) return `il y a ${hours} h`
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+  if (hours < 24) return t('il y a {n} h', { n: hours })
+  return new Date(iso).toLocaleDateString(locale(), { day: 'numeric', month: 'long' })
 }
 
 export default function Priere() {
@@ -50,26 +51,25 @@ export default function Priere() {
   }
 
   async function remove(id) {
-    if (!window.confirm('Supprimer définitivement cette intention ?')) return
+    if (!window.confirm(t('Supprimer définitivement cette intention ?'))) return
     await api(`/intentions/${id}/`, { method: 'DELETE' })
     setWall((current) => ({ ...current, items: current.items.filter((i) => i.id !== id) }))
   }
 
   return (
     <>
-      <PageHero kicker="Confier" title="Je demande une prière">
-        Confiez votre intention à la prière de la communauté. Vous choisissez : visible sur le mur de prière, ou réservée
-        aux prêtres de la paroisse.
+      <PageHero kicker={t("Confier")} title={t("Je demande une prière")}>
+        {t("Confiez votre intention à la prière de la communauté. Vous choisissez : visible sur le mur de prière, ou réservée aux prêtres de la paroisse.")}
       </PageHero>
 
       <Section>
         <div className="mx-auto max-w-2xl">
           <PastoralForm
             endpoint="/intentions/"
-            submitLabel="Confier cette intention à la prière"
-            successTitle="Intention reçue dans la prière"
-            successText="Merci. Si vous l’avez rendue visible, elle apparaît maintenant sur le mur de prière ci-dessous."
-            notice="Ne mentionnez que ce que vous souhaitez partager. Évitez les noms complets et les détails de santé sur le mur public."
+            submitLabel={t("Confier cette intention à la prière")}
+            successTitle={t("Intention reçue dans la prière")}
+            successText={t("Merci. Si vous l’avez rendue visible, elle apparaît maintenant sur le mur de prière ci-dessous.")}
+            notice={t("Ne mentionnez que ce que vous souhaitez partager. Évitez les noms complets et les détails de santé sur le mur public.")}
             sensitiveNotice={false}
             onSent={load}
             toPayload={(f) => ({ author_name: f.prenom, category: f.categorie, text: f.intention, is_public: f.publique })}
@@ -89,24 +89,23 @@ export default function Priere() {
         </div>
       </Section>
 
-      <Section tone="stone" eyebrow="Communion" title="Le mur de prière">
+      <Section tone="stone" eyebrow={t("Communion")} title={t("Le mur de prière")}>
         <p className="mb-6 max-w-2xl text-muted">
-          Les intentions partagées par les fidèles. Prenez un instant pour prier avec eux. Les prêtres veillent sur ce mur
-          et retirent ce qui n’y a pas sa place.
+          {t("Les intentions partagées par les fidèles. Prenez un instant pour prier avec eux. Les prêtres veillent sur ce mur et retirent ce qui n’y a pas sa place.")}
         </p>
-        {wall.loading ? <p className="text-muted">Chargement…</p> : null}
-        {wall.error ? <ComingSoon>Le mur de prière est momentanément indisponible.</ComingSoon> : null}
+        {wall.loading ? <p className="text-muted">{t("Chargement…")}</p> : null}
+        {wall.error ? <ComingSoon>{t("Le mur de prière est momentanément indisponible.")}</ComingSoon> : null}
         {!wall.loading && !wall.error && !wall.items.length ? (
-          <ComingSoon>Aucune intention partagée pour le moment. Soyez le premier à confier la vôtre.</ComingSoon>
+          <ComingSoon>{t("Aucune intention partagée pour le moment. Soyez le premier à confier la vôtre.")}</ComingSoon>
         ) : null}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {wall.items.map((item) => (
             <Card key={item.id} className="flex flex-col">
               <p className="text-xs tracking-[0.2em] text-wine uppercase">
-                {item.category_label} · {timeAgo(item.created_at)}
+                {t(item.category_label)} · {timeAgo(item.created_at)}
               </p>
               <p className="mt-3 flex-1 whitespace-pre-line">{item.text}</p>
-              <p className="mt-3 text-sm text-muted">{item.author_name || 'Un fidèle'}</p>
+              <p className="mt-3 text-sm text-muted">{item.author_name || t('Un fidèle')}</p>
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <button
                   type="button"
@@ -114,16 +113,16 @@ export default function Priere() {
                   disabled={prayed.has(item.id)}
                   className="border border-wine px-3 py-1.5 text-xs text-wine uppercase disabled:bg-wine disabled:text-cream"
                 >
-                  {prayed.has(item.id) ? 'Je prie avec vous' : 'Je prie aussi'}
+                  {prayed.has(item.id) ? t('Je prie avec vous') : t('Je prie aussi')}
                 </button>
                 {item.prayed_count ? (
                   <span className="text-xs text-muted">
-                    {item.prayed_count} {item.prayed_count > 1 ? 'personnes prient' : 'personne prie'}
+                    {item.prayed_count} {item.prayed_count > 1 ? t('personnes prient') : t('personne prie')}
                   </span>
                 ) : null}
                 {hasRole('pretre') ? (
                   <button type="button" onClick={() => remove(item.id)} className="ml-auto text-xs text-wine underline">
-                    Supprimer
+                    {t("Supprimer")}
                   </button>
                 ) : null}
               </div>

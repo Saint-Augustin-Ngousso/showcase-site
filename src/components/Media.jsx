@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
+import { t } from '../i18n/index.jsx'
 
 export function youtubeEmbed(url) {
   const match = (url || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)
   return match ? `https://www.youtube-nocookie.com/embed/${match[1]}` : null
 }
 
-export function VideoEmbed({ url, title = 'Vidéo' }) {
+export function VideoEmbed({ url, title = 'Video' }) {
   const embed = youtubeEmbed(url)
   if (embed) {
     return (
@@ -21,7 +22,7 @@ export function VideoEmbed({ url, title = 'Vidéo' }) {
   }
   return (
     <a href={url} target="_blank" rel="noreferrer" className="inline-flex border border-wine px-4 py-2 text-sm text-wine">
-      Voir la vidéo
+      {t("Voir la vidéo")}
     </a>
   )
 }
@@ -67,15 +68,15 @@ export function PhotoGallery({ items }) {
             {items.length > 1 ? (
               <>
                 <button type="button" className="border border-cream/50 px-3 py-1.5 text-sm text-cream" onClick={() => setIndex((i) => (i - 1 + items.length) % items.length)}>
-                  ← Précédente
+                  {t("← Précédente")}
                 </button>
                 <button type="button" className="border border-cream/50 px-3 py-1.5 text-sm text-cream" onClick={() => setIndex((i) => (i + 1) % items.length)}>
-                  Suivante →
+                  {t("Suivante →")}
                 </button>
               </>
             ) : null}
             <button type="button" className="border border-cream/50 px-3 py-1.5 text-sm text-cream" onClick={() => setIndex(null)}>
-              Fermer
+              {t("Fermer")}
             </button>
           </div>
         </div>

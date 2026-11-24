@@ -1,6 +1,7 @@
 import { useSite } from '../data/SiteContext.jsx'
 import PastoralForm from '../components/PastoralForm.jsx'
 import { Card, ComingSoon, CtaLink, PageHero, Section } from '../components/Layout.jsx'
+import { t } from '../i18n/index.jsx'
 
 export default function Pretres() {
   const { parish, priests } = useSite()
@@ -8,8 +9,8 @@ export default function Pretres() {
 
   return (
     <>
-      <PageHero kicker="Équipe sacerdotale" title="Nos prêtres">
-        Le curé, les vicaires et le vicaire de week-end : leurs secteurs et leurs aumôneries.
+      <PageHero kicker={t("Équipe sacerdotale")} title={t("Nos prêtres")}>
+        {t("Le curé, les vicaires et le vicaire de week-end : leurs secteurs et leurs aumôneries.")}
       </PageHero>
 
       <Section>
@@ -27,12 +28,12 @@ export default function Pretres() {
               <h2 className="font-serif mt-1 text-2xl">
                 {person.title} {person.name}
               </h2>
-              {person.sector ? <p className="mt-2 text-sm">Aumônier du secteur {person.sector}</p> : null}
+              {person.sector ? <p className="mt-2 text-sm">{t('Aumônier du secteur {sector}', { sector: person.sector })}</p> : null}
               <p className="mt-3 text-muted">{person.chaplaincy}</p>
               {person.bio ? <p className="mt-3 whitespace-pre-line text-sm text-muted">{person.bio}</p> : null}
               {person.writeTo ? (
                 <div className="mt-4">
-                  <CtaLink href="#rencontrer">Écrire au curé</CtaLink>
+                  <CtaLink href="#rencontrer">{t("Écrire au curé")}</CtaLink>
                 </div>
               ) : null}
             </Card>
@@ -41,21 +42,20 @@ export default function Pretres() {
         {missingPhotos ? (
           <div className="mt-8">
             <ComingSoon>
-              Une photo officielle et une courte présentation de quelques lignes seront ajoutées pour chaque prêtre, après
-              son accord.
+              {t("Une photo officielle et une courte présentation de quelques lignes seront ajoutées pour chaque prêtre, après son accord.")}
             </ComingSoon>
           </div>
         ) : null}
       </Section>
 
-      <Section id="rencontrer" tone="stone" title="J’ai besoin de parler à un prêtre">
+      <Section id="rencontrer" tone="stone" title={t("J’ai besoin de parler à un prêtre")}>
         <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
           <PastoralForm
             endpoint="/requests/"
-            submitLabel="Envoyer la demande"
-            successTitle="Un prêtre pourra vous joindre"
-            successText="Votre demande est arrivée. Seuls les prêtres de la paroisse peuvent la lire."
-            notice="Ce formulaire ne remplace pas une situation d’urgence médicale ou psychologique. En cas de danger immédiat, contactez les secours."
+            submitLabel={t("Envoyer la demande")}
+            successTitle={t("Un prêtre pourra vous joindre")}
+            successText={t("Votre demande est arrivée. Seuls les prêtres de la paroisse peuvent la lire.")}
+            notice={t("Ce formulaire ne remplace pas une situation d’urgence médicale ou psychologique. En cas de danger immédiat, contactez les secours.")}
             toPayload={(f) => ({
               kind: 'pretre',
               name: f.prenom,
@@ -75,15 +75,15 @@ export default function Pretres() {
           <div>
             <p className="text-muted">
               {parish.whatsapp
-                ? 'Vous pouvez aussi écrire au numéro WhatsApp paroissial, distinct du téléphone personnel des prêtres.'
-                : 'Le numéro WhatsApp paroissial, distinct du téléphone personnel du curé, sera publié dès qu’il sera confirmé. En attendant, le secrétariat reste le premier contact.'}
+                ? t('Vous pouvez aussi écrire au numéro WhatsApp paroissial, distinct du téléphone personnel des prêtres.')
+                : t('Le numéro WhatsApp paroissial, distinct du téléphone personnel du curé, sera publié dès qu’il sera confirmé. En attendant, le secrétariat reste le premier contact.')}
             </p>
             <div className="mt-6">
-              <CtaLink to="/contact">Aller au contact</CtaLink>
+              <CtaLink to="/contact">{t("Aller au contact")}</CtaLink>
             </div>
             {parish.whatsapp ? (
               <div className="mt-3">
-                <CtaLink href={parish.whatsapp}>WhatsApp paroissial</CtaLink>
+                <CtaLink href={parish.whatsapp}>{t("WhatsApp paroissial")}</CtaLink>
               </div>
             ) : null}
           </div>

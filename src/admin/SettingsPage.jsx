@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react'
 import { useSite } from '../data/SiteContext.jsx'
 import { api } from '../lib/api.js'
 import { FieldRow, buildBody } from './fields.jsx'
+import Translations, { cleanI18n } from './Translations.jsx'
+
+const TRANSLATE = [
+  'diocese', 'worship_places', 'theme_parish', 'theme_diocesan', 'slogan', 'year_label', 'objective', 'cure_word',
+  'zone', 'landmark', 'transport', 'office_hours', 'church_open', 'donations_intro', 'choirs_note',
+]
 
 const f = (name, label, type = 'text', extra = {}) => ({ name, label, type, ...extra })
 
@@ -36,7 +42,6 @@ const SECTIONS = [
     title: 'Textes',
     fields: [
       f('cure_word', 'Mot du curé (page d’accueil)', 'textarea', { rows: 6 }),
-      f('history', 'Historique de la paroisse', 'textarea', { rows: 8 }),
       f('donations_intro', 'Introduction de la rubrique dons', 'textarea'),
     ],
   },
@@ -82,7 +87,7 @@ export default function SettingsPage() {
     api('/settings/')
       .then((data) => {
         setInitial(data)
-        setForm(Object.fromEntries(ALL_FIELDS.map((fld) => [fld.name, data[fld.name] ?? ''])))
+        setForm({ ...Object.fromEntries(ALL_FIELDS.map((fld) => [fld.name, data[fld.name] ?? ''])), i18n: data.i18n || { en: {} } })
       })
       .catch((err) => setState((s) => ({ ...s, error: err.message })))
   }, [])
@@ -93,9 +98,13 @@ export default function SettingsPage() {
     try {
       const values = { ...form }
       for (const key of ['latitude', 'longitude']) values[key] = values[key] === '' ? null : values[key]
-      const data = await api('/settings/', { method: 'PATCH', body: buildBody(ALL_FIELDS, values, initial) })
+      const body = buildBody(ALL_FIELDS, values, initial)
+      const i18n = cleanI18n(form.i18n)
+      if (body instanceof FormData) body.append('i18n', JSON.stringify(i18n))
+      else body.i18n = i18n
+      const data = await api('/settings/', { method: 'PATCH', body })
       setInitial(data)
-      setForm(Object.fromEntries(ALL_FIELDS.map((fld) => [fld.name, data[fld.name] ?? ''])))
+      setForm({ ...Object.fromEntries(ALL_FIELDS.map((fld) => [fld.name, data[fld.name] ?? ''])), i18n: data.i18n || { en: {} } })
       setState({ saving: false, message: 'Fiche enregistrée. Le site est à jour.', error: '' })
       reload()
     } catch (err) {
@@ -117,6 +126,14 @@ export default function SettingsPage() {
           ))}
         </fieldset>
       ))}
+      <div className="mt-6">
+        <Translations
+          fields={ALL_FIELDS}
+          names={TRANSLATE}
+          value={form.i18n}
+          onChange={(i18n) => setForm((cur) => ({ ...cur, i18n }))}
+        />
+      </div>
       <div className="sticky bottom-0 mt-6 flex items-center gap-3 border-t border-gold/30 bg-cream py-3">
         <button type="submit" disabled={state.saving} className="bg-wine px-5 py-2 text-sm text-cream disabled:opacity-60">
           {state.saving ? 'Enregistrement…' : 'Enregistrer'}
